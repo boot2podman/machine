@@ -1,1 +1,4 @@
 podman-machine
+podman-machine.linux-amd64
+podman-machine.darwin-amd64
+podman-machine.windows-amd64.exe
