@@ -82,6 +82,9 @@ func (creator *StandardSSHClientCreator) CreateSSHClient(d drivers.Driver) (ssh.
 	if d.GetSSHKeyPath() != "" {
 		auth.Keys = []string{d.GetSSHKeyPath()}
 	}
+	if d.GetSSHKnownHosts() != "" {
+		auth.KnownHosts = []string{d.GetSSHKnownHosts()}
+	}
 
 	return ssh.NewClient(d.GetSSHUsername(), addr, port, auth)
 }

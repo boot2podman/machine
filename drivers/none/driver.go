@@ -59,6 +59,10 @@ func (d *Driver) GetSSHKeyPath() string {
 	return ""
 }
 
+func (d *Driver) GetSSHKnownHosts() string {
+	return ""
+}
+
 func (d *Driver) GetSSHPort() (int, error) {
 	return 0, nil
 }

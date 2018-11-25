@@ -33,6 +33,8 @@ type HostInfo interface {
 	GetSSHUsername() string
 
 	GetSSHKeyPath() string
+
+	GetSSHKnownHosts() string
 }
 
 // HostInfoLoader loads host information.
@@ -165,6 +167,9 @@ func getInfoForScpArg(hostAndPath string, hostInfoLoader HostInfoLoader) (h Host
 
 	if h.GetSSHKeyPath() != "" {
 		args = append(args, "-o", fmt.Sprintf("IdentityFile=%q", h.GetSSHKeyPath()))
+	}
+	if h.GetSSHKnownHosts() != "" {
+		args = append(args, "-o", fmt.Sprintf("UserKnownHostsFile=%s", h.GetSSHKnownHosts()))
 	}
 
 	return

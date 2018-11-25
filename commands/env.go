@@ -14,7 +14,7 @@ import (
 )
 
 const (
-	envTmpl = `{{ .Prefix }}PODMAN_USER{{ .Delimiter }}{{ .PodmanUser }}{{ .Suffix }}{{ .Prefix }}PODMAN_HOST{{ .Delimiter }}{{ .PodmanHost }}{{ .Suffix }}{{ .Prefix }}PODMAN_PORT{{ .Delimiter }}{{ .PodmanPort }}{{ .Suffix }}{{ .Prefix }}PODMAN_IDENTITY_FILE{{ .Delimiter }}{{ .IdentityFile }}{{ .Suffix }}{{ .Prefix }}PODMAN_MACHINE_NAME{{ .Delimiter }}{{ .MachineName }}{{ .Suffix }}{{ if .ComposePathsVar }}{{ .Prefix }}COMPOSE_CONVERT_WINDOWS_PATHS{{ .Delimiter }}true{{ .Suffix }}{{end}}{{ if .NoProxyVar }}{{ .Prefix }}{{ .NoProxyVar }}{{ .Delimiter }}{{ .NoProxyValue }}{{ .Suffix }}{{end}}{{ .UsageHint }}`
+	envTmpl = `{{ .Prefix }}PODMAN_USER{{ .Delimiter }}{{ .PodmanUser }}{{ .Suffix }}{{ .Prefix }}PODMAN_HOST{{ .Delimiter }}{{ .PodmanHost }}{{ .Suffix }}{{ .Prefix }}PODMAN_PORT{{ .Delimiter }}{{ .PodmanPort }}{{ .Suffix }}{{ .Prefix }}PODMAN_IDENTITY_FILE{{ .Delimiter }}{{ .IdentityFile }}{{ .Suffix }}{{ if .KnownHosts }}{{ .Prefix }}PODMAN_KNOWN_HOSTS{{ .Delimiter }}{{ .KnownHosts }}{{ .Suffix }}{{end}}{{ .Prefix }}PODMAN_MACHINE_NAME{{ .Delimiter }}{{ .MachineName }}{{ .Suffix }}{{ if .ComposePathsVar }}{{ .Prefix }}COMPOSE_CONVERT_WINDOWS_PATHS{{ .Delimiter }}true{{ .Suffix }}{{end}}{{ if .NoProxyVar }}{{ .Prefix }}{{ .NoProxyVar }}{{ .Delimiter }}{{ .NoProxyValue }}{{ .Suffix }}{{end}}{{ .UsageHint }}`
 )
 
 var (
@@ -35,6 +35,7 @@ type ShellConfig struct {
 	PodmanHost      string
 	PodmanPort      int
 	IdentityFile    string
+	KnownHosts      string
 	UsageHint       string
 	MachineName     string
 	NoProxyVar      string
@@ -107,7 +108,8 @@ func shellCfgSet(c CommandLine, api libmachine.API) (*ShellConfig, error) {
 			return nil, err
 		}
 
-		key := host.Driver.GetSSHKeyPath()
+		privateKey := host.Driver.GetSSHKeyPath()
+		knownHosts := host.Driver.GetSSHKnownHosts()
 
 		if addr != "" {
 			// always use root@ for socket
@@ -118,7 +120,8 @@ func shellCfgSet(c CommandLine, api libmachine.API) (*ShellConfig, error) {
 			PodmanUser:   user,
 			PodmanHost:   addr,
 			PodmanPort:   port,
-			IdentityFile: key,
+			IdentityFile: privateKey,
+			KnownHosts:   knownHosts,
 			UsageHint:    hint,
 			MachineName:  host.Name,
 		}

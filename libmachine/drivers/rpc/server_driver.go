@@ -169,6 +169,11 @@ func (r *RPCServerDriver) GetSSHKeyPath(_ *struct{}, reply *string) error {
 	return nil
 }
 
+func (r *RPCServerDriver) GetSSHKnownHosts(_ *struct{}, reply *string) error {
+	*reply = r.ActualDriver.GetSSHKnownHosts()
+	return nil
+}
+
 // GetSSHPort returns port for use with ssh
 func (r *RPCServerDriver) GetSSHPort(_ *struct{}, reply *int) error {
 	port, err := r.ActualDriver.GetSSHPort()

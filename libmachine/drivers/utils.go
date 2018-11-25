@@ -20,11 +20,12 @@ func GetSSHClientFromDriver(d Driver) (ssh.Client, error) {
 	}
 
 	var auth *ssh.Auth
-	if d.GetSSHKeyPath() == "" {
+	if d.GetSSHKeyPath() == "" && d.GetSSHKnownHosts() == "" {
 		auth = &ssh.Auth{}
 	} else {
 		auth = &ssh.Auth{
-			Keys: []string{d.GetSSHKeyPath()},
+			Keys:       []string{d.GetSSHKeyPath()},
+			KnownHosts: []string{d.GetSSHKnownHosts()},
 		}
 	}
 

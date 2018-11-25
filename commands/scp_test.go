@@ -9,11 +9,12 @@ import (
 )
 
 type MockHostInfo struct {
-	name        string
-	ip          string
-	sshPort     int
-	sshUsername string
-	sshKeyPath  string
+	name          string
+	ip            string
+	sshPort       int
+	sshUsername   string
+	sshKeyPath    string
+	sshKnownHosts string
 }
 
 func (h *MockHostInfo) GetMachineName() string {
@@ -34,6 +35,10 @@ func (h *MockHostInfo) GetSSHUsername() string {
 
 func (h *MockHostInfo) GetSSHKeyPath() string {
 	return h.sshKeyPath
+}
+
+func (h *MockHostInfo) GetSSHKnownHosts() string {
+	return h.sshKnownHosts
 }
 
 type MockHostInfoLoader struct {

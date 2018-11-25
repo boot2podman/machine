@@ -72,6 +72,7 @@ const (
 	GetIPMethod              = `.GetIP`
 	GetSSHHostnameMethod     = `.GetSSHHostname`
 	GetSSHKeyPathMethod      = `.GetSSHKeyPath`
+	GetSSHKnownHostsMethod   = `.GetSSHKnownHosts`
 	GetSSHPortMethod         = `.GetSSHPort`
 	GetSSHUsernameMethod     = `.GetSSHUsername`
 	GetStateMethod           = `.GetState`
@@ -300,6 +301,17 @@ func (c *RPCClientDriver) GetSSHKeyPath() string {
 	path, err := c.rpcStringCall(GetSSHKeyPathMethod)
 	if err != nil {
 		log.Warnf("Error attempting call to get SSH key path: %s", err)
+	}
+
+	return path
+}
+
+// GetSSHKnownHosts returns the key path
+// TODO:  This method doesn't even make sense to have with RPC.
+func (c *RPCClientDriver) GetSSHKnownHosts() string {
+	path, err := c.rpcStringCall(GetSSHKnownHostsMethod)
+	if err != nil {
+		log.Warnf("Error attempting call to get SSH known hosts: %s", err)
 	}
 
 	return path

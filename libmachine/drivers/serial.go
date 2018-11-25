@@ -87,6 +87,13 @@ func (d *SerialDriver) GetSSHKeyPath() string {
 	return d.Driver.GetSSHKeyPath()
 }
 
+// GetSSHKnownHosts returns known hosts for use with ssh
+func (d *SerialDriver) GetSSHKnownHosts() string {
+	d.Lock()
+	defer d.Unlock()
+	return d.Driver.GetSSHKnownHosts()
+}
+
 // GetSSHPort returns port for use with ssh
 func (d *SerialDriver) GetSSHPort() (int, error) {
 	d.Lock()

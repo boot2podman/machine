@@ -172,6 +172,10 @@ func (d *Driver) GetSSHKeyPath() string {
 	return d.ResolveStorePath("id_rsa")
 }
 
+func (d *Driver) GetSSHKnownHosts() string {
+	return d.ResolveStorePath("known_hosts")
+}
+
 func (d *Driver) GetSSHPort() (int, error) {
 	if d.SSHPort == 0 {
 		d.SSHPort = 22

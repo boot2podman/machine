@@ -127,6 +127,9 @@ func getInfoForSshfsArg(hostAndPath string, hostInfoLoader HostInfoLoader) (h Ho
 	if h.GetSSHKeyPath() != "" {
 		args = append(args, "-o", fmt.Sprintf("IdentityFile=%s", h.GetSSHKeyPath()))
 	}
+	if h.GetSSHKnownHosts() != "" {
+		args = append(args, "-o", fmt.Sprintf("UserKnownHostsFile=%s", h.GetSSHKnownHosts()))
+	}
 
 	if user == "" {
 		user = h.GetSSHUsername()

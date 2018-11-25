@@ -35,6 +35,9 @@ type Driver interface {
 	// GetSSHKeyPath returns key path for use with ssh
 	GetSSHKeyPath() string
 
+	// GetSSHKnownHosts returns known hosts for use with ssh
+	GetSSHKnownHosts() string
+
 	// GetSSHPort returns port for use with ssh
 	GetSSHPort() (int, error)
 

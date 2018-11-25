@@ -14,12 +14,13 @@ const (
 // BaseDriver - Embed this struct into drivers to provide the common set
 // of fields and functions.
 type BaseDriver struct {
-	IPAddress   string
-	MachineName string
-	SSHUser     string
-	SSHPort     int
-	SSHKeyPath  string
-	StorePath   string
+	IPAddress     string
+	MachineName   string
+	SSHUser       string
+	SSHPort       int
+	SSHKeyPath    string
+	SSHKnownHosts string
+	StorePath     string
 }
 
 // DriverName returns the name of the driver
@@ -44,6 +45,14 @@ func (d *BaseDriver) GetIP() (string, error) {
 func (d *BaseDriver) GetSSHKeyPath() string {
 	if d.SSHKeyPath == "" {
 		d.SSHKeyPath = d.ResolveStorePath("id_rsa")
+	}
+	return d.SSHKeyPath
+}
+
+// GetSSHKnownHosts returns the ssh key path
+func (d *BaseDriver) GetSSHKnownHosts() string {
+	if d.SSHKnownHosts == "" {
+		d.SSHKnownHosts = d.ResolveStorePath("known_hosts")
 	}
 	return d.SSHKeyPath
 }

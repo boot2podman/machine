@@ -50,8 +50,9 @@ type NativeClient struct {
 }
 
 type Auth struct {
-	Passwords []string
-	Keys      []string
+	Passwords  []string
+	Keys       []string
+	KnownHosts []string
 }
 
 type ClientType string
@@ -75,6 +76,8 @@ var (
 		"-o", "LogLevel=quiet", // suppress "Warning: Permanently added '[localhost]:2022' (ECDSA) to the list of known hosts."
 		"-o", "PasswordAuthentication=no",
 		"-o", "ServerAliveInterval=60", // prevents connection to be dropped if command takes too long
+	}
+	ignoreHostsSSHArgs = []string{
 		"-o", "StrictHostKeyChecking=no",
 		"-o", "UserKnownHostsFile=/dev/null",
 	}
@@ -151,10 +154,26 @@ func NewNativeConfig(user string, auth *Auth) (ssh.ClientConfig, error) {
 		authMethods = append(authMethods, ssh.Password(p))
 	}
 
+	hostKeyCallback := ssh.InsecureIgnoreHostKey()
+
+	for _, h := range auth.KnownHosts {
+		hosts, err := ioutil.ReadFile(h)
+		if err != nil {
+			return ssh.ClientConfig{}, err
+		}
+
+		_, _, publicKey, _, _, err := ssh.ParseKnownHosts(hosts)
+		if err != nil {
+			return ssh.ClientConfig{}, err
+		}
+
+		hostKeyCallback = ssh.FixedHostKey(publicKey)
+	}
+
 	return ssh.ClientConfig{
 		User:            user,
 		Auth:            authMethods,
-		HostKeyCallback: ssh.InsecureIgnoreHostKey(),
+		HostKeyCallback: hostKeyCallback,
 	}, nil
 }
 
@@ -337,7 +356,15 @@ func NewExternalClient(sshBinaryPath, user, host string, port int, auth *Auth) (
 		BinaryPath: sshBinaryPath,
 	}
 
-	args := append(baseSSHArgs, fmt.Sprintf("%s@%s", user, host))
+	args := baseSSHArgs
+	if len(auth.KnownHosts) > 0 {
+		for _, knownHostsPath := range auth.KnownHosts {
+			args = append(args, "-o", fmt.Sprintf("UserKnownHostsFile=%s", knownHostsPath))
+		}
+	} else {
+		args = append(args, ignoreHostsSSHArgs...)
+	}
+	args = append(args, fmt.Sprintf("%s@%s", user, host))
 
 	// If no identities are explicitly provided, also look at the identities
 	// offered by ssh-agent

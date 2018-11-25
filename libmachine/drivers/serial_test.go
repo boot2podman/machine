@@ -29,17 +29,18 @@ func (l *MockLocker) Unlock() {
 }
 
 type MockDriver struct {
-	calls       *CallRecorder
-	driverName  string
-	flags       []mcnflag.Flag
-	ip          string
-	machineName string
-	sshHostname string
-	sshKeyPath  string
-	sshPort     int
-	sshUsername string
-	url         string
-	state       state.State
+	calls         *CallRecorder
+	driverName    string
+	flags         []mcnflag.Flag
+	ip            string
+	machineName   string
+	sshHostname   string
+	sshKeyPath    string
+	sshKnownHosts string
+	sshPort       int
+	sshUsername   string
+	url           string
+	state         state.State
 }
 
 func (d *MockDriver) Create() error {
@@ -75,6 +76,11 @@ func (d *MockDriver) GetSSHHostname() (string, error) {
 func (d *MockDriver) GetSSHKeyPath() string {
 	d.calls.record("GetSSHKeyPath")
 	return d.sshKeyPath
+}
+
+func (d *MockDriver) GetSSHKnownHosts() string {
+	d.calls.record("GetSSHKnownHosts")
+	return d.sshKnownHosts
 }
 
 func (d *MockDriver) GetSSHPort() (int, error) {
@@ -190,6 +196,16 @@ func TestSerialDriverGetSSHKeyPath(t *testing.T) {
 
 	assert.Equal(t, "PATH", path)
 	assert.Equal(t, []string{"Lock", "GetSSHKeyPath", "Unlock"}, callRecorder.calls)
+}
+
+func TestSerialDriverGetSSHKnownHosts(t *testing.T) {
+	callRecorder := &CallRecorder{}
+
+	driver := newSerialDriverWithLock(&MockDriver{sshKnownHosts: "PATH", calls: callRecorder}, &MockLocker{calls: callRecorder})
+	path := driver.GetSSHKnownHosts()
+
+	assert.Equal(t, "PATH", path)
+	assert.Equal(t, []string{"Lock", "GetSSHKnownHosts", "Unlock"}, callRecorder.calls)
 }
 
 func TestSerialDriverGetSSHPort(t *testing.T) {
