@@ -1,6 +1,7 @@
 package host
 
 import (
+	"os/exec"
 	"regexp"
 
 	"github.com/boot2podman/machine/libmachine/auth"
@@ -22,6 +23,7 @@ var (
 
 type SSHClientCreator interface {
 	CreateSSHClient(d drivers.Driver) (ssh.Client, error)
+	CreateExternalRootSSHClient(d drivers.Driver) (*ssh.ExternalClient, error)
 }
 
 type StandardSSHClientCreator struct {
@@ -84,6 +86,34 @@ func (creator *StandardSSHClientCreator) CreateSSHClient(d drivers.Driver) (ssh.
 	}
 
 	return ssh.NewClient(d.GetSSHUsername(), addr, port, auth)
+}
+
+func (h *Host) CreateExternalRootSSHClient() (*ssh.ExternalClient, error) {
+	return stdSSHClientCreator.CreateExternalRootSSHClient(h.Driver)
+}
+
+func (creator *StandardSSHClientCreator) CreateExternalRootSSHClient(d drivers.Driver) (*ssh.ExternalClient, error) {
+	sshBinaryPath, err := exec.LookPath("ssh")
+	if err != nil {
+		return &ssh.ExternalClient{}, err
+	}
+
+	addr, err := d.GetSSHHostname()
+	if err != nil {
+		return &ssh.ExternalClient{}, err
+	}
+
+	port, err := d.GetSSHPort()
+	if err != nil {
+		return &ssh.ExternalClient{}, err
+	}
+
+	auth := &ssh.Auth{}
+	if d.GetSSHKeyPath() != "" {
+		auth.Keys = []string{d.GetSSHKeyPath()}
+	}
+
+	return ssh.NewExternalClient(sshBinaryPath, "root", addr, port, auth)
 }
 
 func (h *Host) runActionForState(action func() error, desiredState state.State) error {

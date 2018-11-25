@@ -14,7 +14,8 @@ import (
 )
 
 const (
-	envTmpl = `{{ .Prefix }}PODMAN_USER{{ .Delimiter }}{{ .PodmanUser }}{{ .Suffix }}{{ .Prefix }}PODMAN_HOST{{ .Delimiter }}{{ .PodmanHost }}{{ .Suffix }}{{ .Prefix }}PODMAN_PORT{{ .Delimiter }}{{ .PodmanPort }}{{ .Suffix }}{{ .Prefix }}PODMAN_IDENTITY_FILE{{ .Delimiter }}{{ .IdentityFile }}{{ .Suffix }}{{ if .KnownHosts }}{{ .Prefix }}PODMAN_KNOWN_HOSTS{{ .Delimiter }}{{ .KnownHosts }}{{ .Suffix }}{{else}}{{ .Prefix }}PODMAN_IGNORE_HOSTS{{ .Delimiter }}true{{ .Suffix }}{{end}}{{ .Prefix }}PODMAN_MACHINE_NAME{{ .Delimiter }}{{ .MachineName }}{{ .Suffix }}{{ if .ComposePathsVar }}{{ .Prefix }}COMPOSE_CONVERT_WINDOWS_PATHS{{ .Delimiter }}true{{ .Suffix }}{{end}}{{ if .NoProxyVar }}{{ .Prefix }}{{ .NoProxyVar }}{{ .Delimiter }}{{ .NoProxyValue }}{{ .Suffix }}{{end}}{{ .UsageHint }}`
+	envTmpl    = `{{ .Prefix }}PODMAN_USER{{ .Delimiter }}{{ .PodmanUser }}{{ .Suffix }}{{ .Prefix }}PODMAN_HOST{{ .Delimiter }}{{ .PodmanHost }}{{ .Suffix }}{{ .Prefix }}PODMAN_PORT{{ .Delimiter }}{{ .PodmanPort }}{{ .Suffix }}{{ .Prefix }}PODMAN_IDENTITY_FILE{{ .Delimiter }}{{ .IdentityFile }}{{ .Suffix }}{{ if .KnownHosts }}{{ .Prefix }}PODMAN_KNOWN_HOSTS{{ .Delimiter }}{{ .KnownHosts }}{{ .Suffix }}{{else}}{{ .Prefix }}PODMAN_IGNORE_HOSTS{{ .Delimiter }}true{{ .Suffix }}{{end}}{{ .Prefix }}PODMAN_MACHINE_NAME{{ .Delimiter }}{{ .MachineName }}{{ .Suffix }}{{ if .ComposePathsVar }}{{ .Prefix }}COMPOSE_CONVERT_WINDOWS_PATHS{{ .Delimiter }}true{{ .Suffix }}{{end}}{{ if .NoProxyVar }}{{ .Prefix }}{{ .NoProxyVar }}{{ .Delimiter }}{{ .NoProxyValue }}{{ .Suffix }}{{end}}{{ .UsageHint }}`
+	bridgeTmpl = `{{ .Prefix }}VARLINK_BRIDGE{{ .Delimiter }}{{ .VarlinkBridge }}{{ .Suffix }}{{ .UsageHint }}`
 )
 
 var (
@@ -36,6 +37,7 @@ type ShellConfig struct {
 	PodmanPort      int
 	IdentityFile    string
 	KnownHosts      string
+	VarlinkBridge   string
 	UsageHint       string
 	MachineName     string
 	NoProxyVar      string
@@ -65,7 +67,11 @@ func cmdEnv(c CommandLine, api libmachine.API) error {
 		}
 	}
 
-	return executeTemplateStdout(shellCfg)
+	if c.Bool("varlink") {
+		return executeTemplateStdout(shellCfg, bridgeTmpl)
+	} else {
+		return executeTemplateStdout(shellCfg, envTmpl)
+	}
 }
 
 func shellCfgSet(c CommandLine, api libmachine.API) (*ShellConfig, error) {
@@ -91,7 +97,7 @@ func shellCfgSet(c CommandLine, api libmachine.API) (*ShellConfig, error) {
 	var shellCfg *ShellConfig
 	hint := defaultUsageHinter.GenerateUsageHint(userShell, os.Args)
 
-	if host.Driver != nil {
+	if host.Driver != nil && c.Bool("varlink") == false {
 
 		user := host.Driver.GetSSHUsername()
 		if err != nil {
@@ -123,6 +129,25 @@ func shellCfgSet(c CommandLine, api libmachine.API) (*ShellConfig, error) {
 			UsageHint:    hint,
 			MachineName:  host.Name,
 		}
+
+	} else if host.Driver != nil {
+
+		client, err := host.CreateExternalRootSSHClient()
+		if err != nil {
+			return nil, err
+		}
+
+		command := []string{client.BinaryPath}
+		command = append(command, client.BaseArgs...)
+		command = append(command, "varlink", "bridge")
+		bridge := strings.Join(command, " ")
+
+		shellCfg = &ShellConfig{
+			VarlinkBridge: bridge,
+			UsageHint:     hint,
+			MachineName:   host.Name,
+		}
+
 	} else {
 		shellCfg = &ShellConfig{
 			UsageHint:   hint,
@@ -234,9 +259,9 @@ func shellCfgUnset(c CommandLine, api libmachine.API) (*ShellConfig, error) {
 	return shellCfg, nil
 }
 
-func executeTemplateStdout(shellCfg *ShellConfig) error {
+func executeTemplateStdout(shellCfg *ShellConfig, strTmpl string) error {
 	t := template.New("envConfig")
-	tmpl, err := t.Parse(envTmpl)
+	tmpl, err := t.Parse(strTmpl)
 	if err != nil {
 		return err
 	}

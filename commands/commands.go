@@ -213,6 +213,10 @@ var Commands = []cli.Command{
 		Description: "Argument is a machine name.",
 		Action:      runCommand(cmdEnv),
 		Flags: []cli.Flag{
+			cli.BoolFlag{
+				Name:  "varlink",
+				Usage: "Set varlink bridge, instead of podman variables",
+			},
 			cli.StringFlag{
 				Name:  "shell",
 				Usage: "Force environment to be configured for a specified shell: [fish, cmd, powershell, tcsh, emacs], default is auto-detect",

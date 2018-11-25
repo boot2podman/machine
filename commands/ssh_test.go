@@ -26,6 +26,10 @@ func (fsc *FakeSSHClientCreator) CreateSSHClient(d drivers.Driver) (ssh.Client, 
 	return fsc.client, nil
 }
 
+func (fsc *FakeSSHClientCreator) CreateExternalRootSSHClient(d drivers.Driver) (*ssh.ExternalClient, error) {
+	return nil, nil
+}
+
 func TestCmdSSH(t *testing.T) {
 	testCases := []struct {
 		commandLine   CommandLine

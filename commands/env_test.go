@@ -2,13 +2,16 @@ package commands
 
 import (
 	"os"
+	"strings"
 	"testing"
 
 	"github.com/boot2podman/machine/commands/commandstest"
 	"github.com/boot2podman/machine/drivers/fakedriver"
 	"github.com/boot2podman/machine/libmachine"
+	"github.com/boot2podman/machine/libmachine/drivers"
 	"github.com/boot2podman/machine/libmachine/host"
 	"github.com/boot2podman/machine/libmachine/libmachinetest"
+	"github.com/boot2podman/machine/libmachine/ssh"
 	"github.com/boot2podman/machine/libmachine/state"
 	"github.com/stretchr/testify/assert"
 )
@@ -547,5 +550,90 @@ func TestShellCfgUnset(t *testing.T) {
 		assert.Equal(t, test.expectedErr, err)
 
 		os.Setenv(test.noProxyVar, "")
+	}
+}
+
+type FakeRootSSHClientCreator struct {
+	rootclient *ssh.ExternalClient
+}
+
+func (fsc *FakeRootSSHClientCreator) CreateSSHClient(d drivers.Driver) (ssh.Client, error) {
+	return nil, nil
+}
+
+func (fsc *FakeRootSSHClientCreator) CreateExternalRootSSHClient(d drivers.Driver) (*ssh.ExternalClient, error) {
+	if fsc.rootclient == nil {
+		fsc.rootclient = &ssh.ExternalClient{}
+	}
+	return fsc.rootclient, nil
+}
+
+func TestVarlink(t *testing.T) {
+	const (
+		usageHint = "This is the varlink usage hint"
+	)
+
+	defer revertUsageHinter(defaultUsageHinter)
+	defaultUsageHinter = &SimpleUsageHintGenerator{usageHint}
+
+	sshBinaryPath := "/usr/bin/ssh"
+	sshBaseArgs := "-F /dev/null -o LogLevel=quiet-o root@localhost"
+
+	cc := FakeRootSSHClientCreator{rootclient: &ssh.ExternalClient{}}
+	cc.rootclient.BinaryPath = sshBinaryPath
+	cc.rootclient.BaseArgs = strings.Split(sshBaseArgs, " ")
+
+	var tests = []struct {
+		description      string
+		commandLine      CommandLine
+		api              libmachine.API
+		clientCreator    host.SSHClientCreator
+		expectedShellCfg *ShellConfig
+		expectedErr      error
+	}{
+		{
+			description: "bash shell varlink happy path",
+			commandLine: &commandstest.FakeCommandLine{
+				CliArgs: nil,
+				LocalFlags: &commandstest.FakeFlagger{
+					Data: map[string]interface{}{
+						"shell":   "bash",
+						"varlink": true,
+					},
+				},
+			},
+			api: &libmachinetest.FakeAPI{
+				Hosts: []*host.Host{
+					{
+						Name: defaultMachineName,
+						Driver: &fakedriver.Driver{
+							MockState:    state.Running,
+							MockIP:       "127.0.0.1",
+							MockHostname: "localhost",
+						},
+					},
+				},
+			},
+			clientCreator: &cc,
+			expectedShellCfg: &ShellConfig{
+				Prefix:        "export ",
+				Delimiter:     "=\"",
+				Suffix:        "\"\n",
+				UsageHint:     usageHint,
+				MachineName:   defaultMachineName,
+				VarlinkBridge: sshBinaryPath + " " + sshBaseArgs + " varlink bridge",
+			},
+			expectedErr: nil,
+		},
+	}
+
+	for _, test := range tests {
+		host.SetSSHClientCreator(test.clientCreator)
+
+		t.Log(test.description)
+
+		shellCfg, err := shellCfgSet(test.commandLine, test.api)
+		assert.Equal(t, test.expectedShellCfg, shellCfg)
+		assert.Equal(t, test.expectedErr, err)
 	}
 }

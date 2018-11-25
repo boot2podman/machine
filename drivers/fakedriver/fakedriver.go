@@ -10,9 +10,10 @@ import (
 
 type Driver struct {
 	*drivers.BaseDriver
-	MockState state.State
-	MockIP    string
-	MockName  string
+	MockState    state.State
+	MockIP       string
+	MockName     string
+	MockHostname string
 }
 
 func (d *Driver) GetCreateFlags() []mcnflag.Flag {
@@ -57,7 +58,7 @@ func (d *Driver) GetIP() (string, error) {
 }
 
 func (d *Driver) GetSSHHostname() (string, error) {
-	return "", nil
+	return d.MockHostname, nil
 }
 
 func (d *Driver) GetSSHKeyPath() string {
