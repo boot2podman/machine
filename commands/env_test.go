@@ -2,30 +2,16 @@ package commands
 
 import (
 	"os"
-	"path/filepath"
 	"testing"
 
 	"github.com/boot2podman/machine/commands/commandstest"
-	"github.com/boot2podman/machine/commands/mcndirs"
 	"github.com/boot2podman/machine/drivers/fakedriver"
 	"github.com/boot2podman/machine/libmachine"
-	"github.com/boot2podman/machine/libmachine/auth"
-	"github.com/boot2podman/machine/libmachine/check"
 	"github.com/boot2podman/machine/libmachine/host"
 	"github.com/boot2podman/machine/libmachine/libmachinetest"
 	"github.com/boot2podman/machine/libmachine/state"
 	"github.com/stretchr/testify/assert"
 )
-
-type FakeConnChecker struct {
-	DockerHost  string
-	AuthOptions *auth.Options
-	Err         error
-}
-
-func (fcc *FakeConnChecker) Check(_ *host.Host) (string, *auth.Options, error) {
-	return fcc.DockerHost, fcc.AuthOptions, fcc.Err
-}
 
 type SimpleUsageHintGenerator struct {
 	Hint string
@@ -98,7 +84,6 @@ func TestShellCfgSet(t *testing.T) {
 		description      string
 		commandLine      CommandLine
 		api              libmachine.API
-		connChecker      check.ConnChecker
 		noProxyVar       string
 		noProxyValue     string
 		expectedShellCfg *ShellConfig
@@ -133,18 +118,10 @@ func TestShellCfgSet(t *testing.T) {
 					},
 				},
 			},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:          "export ",
 				Delimiter:       "=\"",
 				Suffix:          "\"\n",
-				DockerCertPath:  filepath.Join(mcndirs.GetMachineDir(), "quux"),
-				DockerHost:      "tcp://1.2.3.4:2376",
-				DockerTLSVerify: "1",
 				UsageHint:       usageHint,
 				MachineName:     "quux",
 				ComposePathsVar: isRuntimeWindows,
@@ -169,18 +146,10 @@ func TestShellCfgSet(t *testing.T) {
 					},
 				},
 			},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:          "export ",
 				Delimiter:       "=\"",
 				Suffix:          "\"\n",
-				DockerCertPath:  filepath.Join(mcndirs.GetMachineDir(), defaultMachineName),
-				DockerHost:      "tcp://1.2.3.4:2376",
-				DockerTLSVerify: "1",
 				UsageHint:       usageHint,
 				MachineName:     defaultMachineName,
 				ComposePathsVar: isRuntimeWindows,
@@ -205,18 +174,10 @@ func TestShellCfgSet(t *testing.T) {
 					},
 				},
 			},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:          "set -gx ",
 				Suffix:          "\";\n",
 				Delimiter:       " \"",
-				DockerCertPath:  filepath.Join(mcndirs.GetMachineDir(), "quux"),
-				DockerHost:      "tcp://1.2.3.4:2376",
-				DockerTLSVerify: "1",
 				UsageHint:       usageHint,
 				MachineName:     "quux",
 				ComposePathsVar: isRuntimeWindows,
@@ -241,18 +202,10 @@ func TestShellCfgSet(t *testing.T) {
 					},
 				},
 			},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:          "$Env:",
 				Suffix:          "\"\n",
 				Delimiter:       " = \"",
-				DockerCertPath:  filepath.Join(mcndirs.GetMachineDir(), "quux"),
-				DockerHost:      "tcp://1.2.3.4:2376",
-				DockerTLSVerify: "1",
 				UsageHint:       usageHint,
 				MachineName:     "quux",
 				ComposePathsVar: isRuntimeWindows,
@@ -277,18 +230,10 @@ func TestShellCfgSet(t *testing.T) {
 					},
 				},
 			},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:          "(setenv \"",
 				Suffix:          "\")\n",
 				Delimiter:       "\" \"",
-				DockerCertPath:  filepath.Join(mcndirs.GetMachineDir(), "quux"),
-				DockerHost:      "tcp://1.2.3.4:2376",
-				DockerTLSVerify: "1",
 				UsageHint:       usageHint,
 				MachineName:     "quux",
 				ComposePathsVar: isRuntimeWindows,
@@ -313,18 +258,10 @@ func TestShellCfgSet(t *testing.T) {
 					},
 				},
 			},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:          "SET ",
 				Suffix:          "\n",
 				Delimiter:       "=",
-				DockerCertPath:  filepath.Join(mcndirs.GetMachineDir(), "quux"),
-				DockerHost:      "tcp://1.2.3.4:2376",
-				DockerTLSVerify: "1",
 				UsageHint:       usageHint,
 				MachineName:     "quux",
 				ComposePathsVar: isRuntimeWindows,
@@ -353,18 +290,10 @@ func TestShellCfgSet(t *testing.T) {
 					},
 				},
 			},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:          "export ",
 				Delimiter:       "=\"",
 				Suffix:          "\"\n",
-				DockerCertPath:  filepath.Join(mcndirs.GetMachineDir(), "quux"),
-				DockerHost:      "tcp://1.2.3.4:2376",
-				DockerTLSVerify: "1",
 				UsageHint:       usageHint,
 				NoProxyVar:      "NO_PROXY",
 				NoProxyValue:    "1.2.3.4", // From FakeDriver
@@ -397,18 +326,10 @@ func TestShellCfgSet(t *testing.T) {
 					},
 				},
 			},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:          "export ",
 				Delimiter:       "=\"",
 				Suffix:          "\"\n",
-				DockerCertPath:  filepath.Join(mcndirs.GetMachineDir(), "quux"),
-				DockerHost:      "tcp://1.2.3.4:2376",
-				DockerTLSVerify: "1",
 				UsageHint:       usageHint,
 				NoProxyVar:      "no_proxy",
 				NoProxyValue:    "192.168.59.1,1.2.3.4", // From FakeDriver
@@ -428,7 +349,6 @@ func TestShellCfgSet(t *testing.T) {
 
 		t.Log(test.description)
 
-		check.DefaultConnChecker = test.connChecker
 		shellCfg, err := shellCfgSet(test.commandLine, test.api)
 		assert.Equal(t, test.expectedShellCfg, shellCfg)
 		assert.Equal(t, test.expectedErr, err)
@@ -451,7 +371,6 @@ func TestShellCfgSetWindowsRuntime(t *testing.T) {
 		description      string
 		commandLine      CommandLine
 		api              libmachine.API
-		connChecker      check.ConnChecker
 		noProxyVar       string
 		noProxyValue     string
 		expectedShellCfg *ShellConfig
@@ -475,18 +394,10 @@ func TestShellCfgSetWindowsRuntime(t *testing.T) {
 					},
 				},
 			},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:          "$Env:",
 				Suffix:          "\"\n",
 				Delimiter:       " = \"",
-				DockerCertPath:  filepath.Join(mcndirs.GetMachineDir(), "quux"),
-				DockerHost:      "tcp://1.2.3.4:2376",
-				DockerTLSVerify: "1",
 				UsageHint:       usageHint,
 				MachineName:     "quux",
 				ComposePathsVar: true,
@@ -506,7 +417,6 @@ func TestShellCfgSetWindowsRuntime(t *testing.T) {
 
 		t.Log(test.description)
 
-		check.DefaultConnChecker = test.connChecker
 		shellCfg, err := shellCfgSet(test.commandLine, test.api)
 		assert.Equal(t, test.expectedShellCfg, shellCfg)
 		assert.Equal(t, test.expectedErr, err)
@@ -527,7 +437,6 @@ func TestShellCfgUnset(t *testing.T) {
 		description      string
 		commandLine      CommandLine
 		api              libmachine.API
-		connChecker      check.ConnChecker
 		noProxyVar       string
 		noProxyValue     string
 		expectedShellCfg *ShellConfig
@@ -553,11 +462,6 @@ func TestShellCfgUnset(t *testing.T) {
 				},
 			},
 			api: &libmachinetest.FakeAPI{},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:    "unset ",
 				Suffix:    "\n",
@@ -578,11 +482,6 @@ func TestShellCfgUnset(t *testing.T) {
 				},
 			},
 			api: &libmachinetest.FakeAPI{},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:    "set -e ",
 				Suffix:    ";\n",
@@ -603,11 +502,6 @@ func TestShellCfgUnset(t *testing.T) {
 				},
 			},
 			api: &libmachinetest.FakeAPI{},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:    `Remove-Item Env:\\`,
 				Suffix:    "\n",
@@ -628,11 +522,6 @@ func TestShellCfgUnset(t *testing.T) {
 				},
 			},
 			api: &libmachinetest.FakeAPI{},
-			connChecker: &FakeConnChecker{
-				DockerHost:  "tcp://1.2.3.4:2376",
-				AuthOptions: nil,
-				Err:         nil,
-			},
 			expectedShellCfg: &ShellConfig{
 				Prefix:    "SET ",
 				Suffix:    "\n",
@@ -653,7 +542,6 @@ func TestShellCfgUnset(t *testing.T) {
 
 		t.Log(test.description)
 
-		check.DefaultConnChecker = test.connChecker
 		shellCfg, err := shellCfgUnset(test.commandLine, test.api)
 		assert.Equal(t, test.expectedShellCfg, shellCfg)
 		assert.Equal(t, test.expectedErr, err)

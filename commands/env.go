@@ -4,20 +4,17 @@ import (
 	"errors"
 	"fmt"
 	"os"
-	"path/filepath"
 	"runtime"
 	"strings"
 	"text/template"
 
-	"github.com/boot2podman/machine/commands/mcndirs"
 	"github.com/boot2podman/machine/libmachine"
-	"github.com/boot2podman/machine/libmachine/check"
 	"github.com/boot2podman/machine/libmachine/log"
 	"github.com/boot2podman/machine/libmachine/shell"
 )
 
 const (
-	envTmpl = `{{ .Prefix }}DOCKER_TLS_VERIFY{{ .Delimiter }}{{ .DockerTLSVerify }}{{ .Suffix }}{{ .Prefix }}DOCKER_HOST{{ .Delimiter }}{{ .DockerHost }}{{ .Suffix }}{{ .Prefix }}DOCKER_CERT_PATH{{ .Delimiter }}{{ .DockerCertPath }}{{ .Suffix }}{{ .Prefix }}DOCKER_MACHINE_NAME{{ .Delimiter }}{{ .MachineName }}{{ .Suffix }}{{ if .ComposePathsVar }}{{ .Prefix }}COMPOSE_CONVERT_WINDOWS_PATHS{{ .Delimiter }}true{{ .Suffix }}{{end}}{{ if .NoProxyVar }}{{ .Prefix }}{{ .NoProxyVar }}{{ .Delimiter }}{{ .NoProxyValue }}{{ .Suffix }}{{end}}{{ .UsageHint }}`
+	envTmpl = `{{ .Prefix }}PODMAN_USER{{ .Delimiter }}{{ .PodmanUser }}{{ .Suffix }}{{ .Prefix }}PODMAN_HOST{{ .Delimiter }}{{ .PodmanHost }}{{ .Suffix }}{{ .Prefix }}PODMAN_PORT{{ .Delimiter }}{{ .PodmanPort }}{{ .Suffix }}{{ .Prefix }}PODMAN_IDENTITY_FILE{{ .Delimiter }}{{ .IdentityFile }}{{ .Suffix }}{{ .Prefix }}PODMAN_MACHINE_NAME{{ .Delimiter }}{{ .MachineName }}{{ .Suffix }}{{ if .ComposePathsVar }}{{ .Prefix }}COMPOSE_CONVERT_WINDOWS_PATHS{{ .Delimiter }}true{{ .Suffix }}{{end}}{{ if .NoProxyVar }}{{ .Prefix }}{{ .NoProxyVar }}{{ .Delimiter }}{{ .NoProxyValue }}{{ .Suffix }}{{end}}{{ .UsageHint }}`
 )
 
 var (
@@ -34,9 +31,10 @@ type ShellConfig struct {
 	Prefix          string
 	Delimiter       string
 	Suffix          string
-	DockerCertPath  string
-	DockerHost      string
-	DockerTLSVerify string
+	PodmanUser      string
+	PodmanHost      string
+	PodmanPort      int
+	IdentityFile    string
 	UsageHint       string
 	MachineName     string
 	NoProxyVar      string
@@ -84,22 +82,51 @@ func shellCfgSet(c CommandLine, api libmachine.API) (*ShellConfig, error) {
 		return nil, err
 	}
 
-	dockerHost, _, err := check.DefaultConnChecker.Check(host)
-	if err != nil {
-		return nil, fmt.Errorf("Error checking TLS connection: %s", err)
-	}
-
 	userShell, err := getShell(c.String("shell"))
 	if err != nil {
 		return nil, err
 	}
 
-	shellCfg := &ShellConfig{
-		DockerCertPath:  filepath.Join(mcndirs.GetMachineDir(), host.Name),
-		DockerHost:      dockerHost,
-		DockerTLSVerify: "1",
-		UsageHint:       defaultUsageHinter.GenerateUsageHint(userShell, os.Args),
-		MachineName:     host.Name,
+	var shellCfg *ShellConfig
+	hint := defaultUsageHinter.GenerateUsageHint(userShell, os.Args)
+
+	if host.Driver != nil {
+
+		user := host.Driver.GetSSHUsername()
+		if err != nil {
+			return nil, err
+		}
+
+		addr, err := host.Driver.GetSSHHostname()
+		if err != nil {
+			return nil, err
+		}
+
+		port, err := host.Driver.GetSSHPort()
+		if err != nil {
+			return nil, err
+		}
+
+		key := host.Driver.GetSSHKeyPath()
+
+		if addr != "" {
+			// always use root@ for socket
+			user = "root"
+		}
+
+		shellCfg = &ShellConfig{
+			PodmanUser:   user,
+			PodmanHost:   addr,
+			PodmanPort:   port,
+			IdentityFile: key,
+			UsageHint:    hint,
+			MachineName:  host.Name,
+		}
+	} else {
+		shellCfg = &ShellConfig{
+			UsageHint:   hint,
+			MachineName: host.Name,
+		}
 	}
 
 	if c.Bool("no-proxy") {
@@ -110,7 +137,7 @@ func shellCfgSet(c CommandLine, api libmachine.API) (*ShellConfig, error) {
 
 		noProxyVar, noProxyValue := findNoProxyFromEnv()
 
-		// add the docker host to the no_proxy list idempotently
+		// add the host to the no_proxy list idempotently
 		switch {
 		case noProxyValue == "":
 			noProxyValue = ip
