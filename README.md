@@ -18,6 +18,28 @@ Creating machine...
 Machine "box" was started.
 ```
 
+``` console
+$ podman-machine ssh box
+        .---.        b o o t 2                 mm             https://podman.io
+       /o   o\                                 ##                              
+    __(=  "  =)__    ##m###m    m####m    m###m##  ####m##m   m#####m  ##m####m
+     //\'-=-'/\\     ##"  "##  ##"  "##  ##"  "##  ## ## ##   " mmm##  ##"   ##
+        )   (        ##    ##  ##    ##  ##    ##  ## ## ##  m##"""##  ##    ##
+       /     \       ###mm##"  "##mm##"  "##mm###  ## ## ##  ##mmm###  ##    ##
+  ____/  / \  \____  ## """      """"      """ ""  "" "" ""   """" ""  ""    ""
+ `------'`"`'------' ##                                                art: jgs
+tc@box:~$ sudo podman run busybox echo hello world
+Trying to pull docker.io/busybox:latest...Getting image source signatures
+Copying blob sha256:90e01955edcd85dac7985b72a8374545eac617ccdddcc992b732e43cd42534af
+ 710.92 KB / 710.92 KB [====================================================] 0s
+Copying config sha256:59788edf1f3e78cd0ebe6ce1446e9d10788225db3dedcfd1a59f764bad2b2690
+ 1.46 KB / 1.46 KB [========================================================] 0s
+Writing manifest to image destination
+Storing signatures
+hello world
+tc@box:~$ exit
+```
+
 ## Connecting
 
 
