@@ -34,7 +34,7 @@ $ podman-machine ssh box -- sudo podman version
 Or you can use the `pypodman` tool remotely:
 
 ``` bash
-$ eval $(podman-machine env)
+$ eval $(podman-machine env box)
 $ pypodman version
 $ pypodman --help
 ```
@@ -48,7 +48,7 @@ See https://github.com/containers/libpod/tree/master/contrib/python
 Connect directly with `varlink` over the bridge:
 
 ``` bash
-$ eval $(podman-machine env --varlink)
+$ eval $(podman-machine env box --varlink)
 $ varlink call io.podman.GetVersion
 $ varlink help io.podman
 ```
