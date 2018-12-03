@@ -99,3 +99,7 @@ Please use [Kubernetes](https://kubernetes.io) for that, instead.
 
 Podman Machine is inspired by [Docker Machine](https://github.com/docker/machine), which is
 a similar solution but for another popular container runtime.
+
+Docker Machine is Copyright 2014 Docker, Inc.
+
+Licensed under the [Apache License, Version 2.0](http://www.apache.org/licenses/LICENSE-2.0)
