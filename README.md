@@ -125,6 +125,21 @@ In order to make files persist, they need to be on a disk.
 
 The default mountpoint (for /dev/sda1) is: `/mnt/sda1`
 
+## Installing tools
+
+If you need to install e.g. `git`, you can download and install it:
+
+``` console
+$ tce-load -wi git
+git.tcz.dep OK
+...
+git.tcz: OK
+$ git --version
+git version 2.18.0
+```
+
+This was for the default tinycore distro, other ISO might differ...
+
 ## Driver Plugins
 
 These core driver plugins are bundled:
