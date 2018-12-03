@@ -51,6 +51,12 @@ You can run the `podman` command over ssh:
 $ podman-machine ssh box -- sudo podman version
 ```
 
+Show the available commands using the help:
+
+``` console
+$ podman-machine ssh box -- sudo podman --help
+```
+
 ### pypodman
 
 Or you can use the `pypodman` tool remotely:
