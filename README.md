@@ -4,6 +4,28 @@ Machine lets you create Podman hosts on your computer.
 It creates servers with Podman on them, then
 configures the Podman client to talk to them.
 
+## Download
+
+Binaries can be found in: https://github.com/boot2podman/machine/releases
+
+Get the version for your operating system and architecture, and put it in your path:
+
+### Linux (GNU)
+
+`podman-machine.linux-amd64 -> podman-machine`
+
+### Darwin (OS X)
+
+`podman-machine.darwin-amd64 -> podman-machine`
+
+### Windows
+
+`podman-machine.windows-amd64.exe -> podman-machine.exe`
+
+You also need a supported Virtual Machine environment, such as [VirtualBox](https://virtualbox.org) or [QEMU](https://qemu.org).
+
+Additional VM environments are possible too, after installing third party machine drivers.
+
 ## Getting Started
 
 ``` console
