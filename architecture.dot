@@ -1,0 +1,16 @@
+digraph G {
+  rankdir=LR;
+  graph [fontname = "Source Sans Pro"];
+  node [fontname = "Source Sans Pro"];
+  edge [fontname = "Source Sans Pro"];
+
+  pypodman [ label="pypodman\n(varlink)" ];
+  machine [ label="machine\n\" box \"" ];
+  subgraph cluster_VM {
+    style=filled;
+    color=lightskyblue;
+    machine;
+    label = "VirtualBox";
+  }
+  pypodman -> machine [ label="ssh" ];
+}

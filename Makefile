@@ -7,6 +7,9 @@ GO_SRC = $(shell find . -type f -name '*.go')
 podman-machine: $(GO_SRC)
 	go build -ldflags "$(GO_LDFLAGS)" $(GO_GCFLAGS) ./cmd/podman-machine
 
+%.png: %.dot
+	dot -Tpng $^ -o $@
+
 cross: podman-machine.linux-amd64 podman-machine.darwin-amd64 podman-machine.windows-amd64
 
 podman-machine.linux-amd64: $(GO_SRC)

@@ -4,6 +4,8 @@ Machine lets you create Podman hosts on your computer.
 It creates servers with Podman on them, then
 configures the Podman client to talk to them.
 
+![architecture](architecture.png)
+
 ## Download
 
 Binaries can be found in: https://github.com/boot2podman/machine/releases
