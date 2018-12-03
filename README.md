@@ -107,6 +107,24 @@ You might need `--bridge="$VARLINK_BRIDGE"`.
 
 See https://github.com/varlink/libvarlink/tree/master/tool
 
+## Accessing files
+
+Only files on the virtual machine are seen by containers.
+
+There is currently no access to any network filesystems.
+
+In order to copy files, you can use the command `scp`:
+
+`podman-machine scp [machine:][path] [machine:][path]`
+
+To mount files locally using [SSHFS](https://github.com/libfuse/sshfs), you can use `mount`:
+
+`podman-machine mount [machine:][path] [mountpoint]`
+
+In order to make files persist, they need to be on a disk.
+
+The default mountpoint (for /dev/sda1) is: `/mnt/sda1`
+
 ## Driver Plugins
 
 These core driver plugins are bundled:
