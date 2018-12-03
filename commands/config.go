@@ -26,12 +26,12 @@ func cmdConfig(c CommandLine, api libmachine.API) error {
 		return err
 	}
 
-	dockerHost, _, err := check.DefaultConnChecker.Check(host)
+	podmanHost, _, err := check.DefaultConnChecker.Check(host)
 	if err != nil {
 		return fmt.Errorf("Error running connection boilerplate: %s", err)
 	}
 
-	log.Debug(dockerHost)
+	log.Debug(podmanHost)
 
 	tlsCACert := filepath.Join(mcndirs.GetMachineDir(), host.Name, "ca.pem")
 	tlsCert := filepath.Join(mcndirs.GetMachineDir(), host.Name, "cert.pem")
@@ -40,7 +40,7 @@ func cmdConfig(c CommandLine, api libmachine.API) error {
 	// TODO(nathanleclaire): These magic strings for the certificate file
 	// names should be cross-package constants.
 	fmt.Printf("--tlsverify\n--tlscacert=%q\n--tlscert=%q\n--tlskey=%q\n-H=%s\n",
-		tlsCACert, tlsCert, tlsKey, dockerHost)
+		tlsCACert, tlsCert, tlsKey, podmanHost)
 
 	return nil
 }

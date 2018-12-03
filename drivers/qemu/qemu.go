@@ -596,7 +596,7 @@ func (d *Driver) Upgrade() error {
 }
 
 //func (d *Driver) GetSSHCommand(args ...string) (*exec.Cmd, error) {
-//	return ssh.GetSSHCommand("localhost", d.SSHPort, "docker", d.sshKeyPath(), args...), nil
+//	return ssh.GetSSHCommand("localhost", d.SSHPort, d.SSHUser, d.sshKeyPath(), args...), nil
 //}
 
 func (d *Driver) sshKeyPath() string {

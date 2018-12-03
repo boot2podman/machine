@@ -16,10 +16,6 @@ var (
 	detector     Detector = &StandardDetector{}
 )
 
-const (
-	LastReleaseBeforeCEVersioning = "1.13.1"
-)
-
 type SSHCommander interface {
 	// Short-hand for accessing an SSH command from the driver.
 	SSHCommand(args string) (string, error)
@@ -41,10 +37,10 @@ type Provisioner interface {
 	SSHCommander
 
 	// Create the files for the daemon to consume configuration settings (return struct of content and path)
-	GenerateDockerOptions(dockerPort int) (*DockerOptions, error)
+	GenerateEngineOptions() (*EngineOptions, error)
 
-	// Get the directory where the settings files for docker are to be found
-	GetDockerOptionsDir() string
+	// Get the directory where the settings files for engine are to be found
+	GetEngineOptionsDir() string
 
 	// Return the auth options used to configure remote connection for the daemon.
 	GetAuthOptions() auth.Options
@@ -63,7 +59,7 @@ type Provisioner interface {
 
 	// Do the actual provisioning piece:
 	//     1. Set the hostname on the instance.
-	//     2. Install Docker if it is not present.
+	//     2. Install engine if it is not present.
 	//     3. Configure the daemon to accept connections over TLS.
 	//     4. Copy the needed certificates to the server and local config dir.
 	Provision(authOptions auth.Options, engineOptions engine.Options) error

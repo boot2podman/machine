@@ -386,7 +386,7 @@ func sortHostListItemsByName(items []HostListItem) {
 }
 
 func isActive(currentState state.State, hostURL string) bool {
-	return currentState == state.Running && hostURL == os.Getenv("DOCKER_HOST")
+	return currentState == state.Running && hostURL == os.Getenv("PODMAN_HOST")
 }
 
 func urlPort(urlWithPort string) string {

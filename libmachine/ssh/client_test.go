@@ -19,25 +19,25 @@ func TestGetSSHCmdArgs(t *testing.T) {
 		{
 			binaryPath: "/usr/local/bin/ssh",
 			args: []string{
-				"docker@localhost",
+				"user@localhost",
 				"apt-get install -y htop",
 			},
 			expectedArgs: []string{
 				"/usr/local/bin/ssh",
-				"docker@localhost",
+				"user@localhost",
 				"apt-get install -y htop",
 			},
 		},
 		{
 			binaryPath: "C:\\Program Files\\Git\\bin\\ssh.exe",
 			args: []string{
-				"docker@localhost",
-				"sudo /usr/bin/sethostname foobar && echo 'foobar' | sudo tee /var/lib/boot2docker/etc/hostname",
+				"user@localhost",
+				"sudo /usr/bin/sethostname foobar && echo 'foobar' | sudo tee /var/lib/boot2podman/etc/hostname",
 			},
 			expectedArgs: []string{
 				"C:\\Program Files\\Git\\bin\\ssh.exe",
-				"docker@localhost",
-				"sudo /usr/bin/sethostname foobar && echo 'foobar' | sudo tee /var/lib/boot2docker/etc/hostname",
+				"user@localhost",
+				"sudo /usr/bin/sethostname foobar && echo 'foobar' | sudo tee /var/lib/boot2podman/etc/hostname",
 			},
 		},
 	}

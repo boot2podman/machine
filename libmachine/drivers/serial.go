@@ -59,7 +59,7 @@ func (d *SerialDriver) GetCreateFlags() []mcnflag.Flag {
 }
 
 // GetIP returns an IP or hostname that this host is available at
-// e.g. 1.2.3.4 or docker-host-d60b70a14d3a.cloudapp.net
+// e.g. 1.2.3.4 or podman-host-d60b70a14d3a.cloudapp.net
 func (d *SerialDriver) GetIP() (string, error) {
 	d.Lock()
 	defer d.Unlock()

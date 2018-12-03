@@ -124,7 +124,7 @@ func (d *Driver) GetCreateFlags() []mcnflag.Flag {
 			Name:   "virtualbox-boot2podman-url",
 			Usage:  "The URL of the boot2podman image. Defaults to the latest available version",
 			Value:  defaultBoot2PodmanURL,
-			EnvVar: "VIRTUALBOX_BOOT2DOCKER_URL",
+			EnvVar: "VIRTUALBOX_BOOT2PODMAN_URL",
 		},
 		mcnflag.BoolFlag{
 			Name:   "virtualbox-host-dns-resolver",

@@ -8,7 +8,7 @@ import (
 const (
 	DefaultSSHUser          = "root"
 	DefaultSSHPort          = 22
-	DefaultEngineInstallURL = "https://get.docker.com"
+	DefaultEngineInstallURL = "https://podman.io"
 )
 
 // BaseDriver - Embed this struct into drivers to provide the common set

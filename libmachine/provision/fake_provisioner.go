@@ -30,11 +30,11 @@ func (fp *FakeProvisioner) String() string {
 	return "fakeprovisioner"
 }
 
-func (fp *FakeProvisioner) GenerateDockerOptions(dockerPort int) (*DockerOptions, error) {
+func (fp *FakeProvisioner) GenerateEngineOptions() (*EngineOptions, error) {
 	return nil, nil
 }
 
-func (fp *FakeProvisioner) GetDockerOptionsDir() string {
+func (fp *FakeProvisioner) GetEngineOptionsDir() string {
 	return ""
 }
 

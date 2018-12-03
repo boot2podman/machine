@@ -40,7 +40,7 @@ var (
 			Name:   "engine-install-url",
 			Usage:  "Custom URL to use for engine installation",
 			Value:  drivers.DefaultEngineInstallURL,
-			EnvVar: "MACHINE_DOCKER_INSTALL_URL",
+			EnvVar: "MACHINE_PODMAN_INSTALL_URL",
 		},
 		cli.StringSliceFlag{
 			Name:  "engine-opt",

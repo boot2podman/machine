@@ -26,25 +26,24 @@ type ErrCertInvalid struct {
 func (e ErrCertInvalid) Error() string {
 	return fmt.Sprintf(`There was an error validating certificates for host %q: %s
 You can attempt to regenerate them using 'podman-machine regenerate-certs [name]'.
-Be advised that this will trigger a Docker daemon restart which might stop running containers.
 `, e.hostURL, e.wrappedErr)
 }
 
 type ConnChecker interface {
-	Check(*host.Host) (dockerHost string, authOptions *auth.Options, err error)
+	Check(*host.Host) (podmanHost string, authOptions *auth.Options, err error)
 }
 
 type MachineConnChecker struct{}
 
 func (mcc *MachineConnChecker) Check(h *host.Host) (string, *auth.Options, error) {
-	dockerHost, err := h.Driver.GetURL()
+	podmanHost, err := h.Driver.GetURL()
 	if err != nil {
 		return "", &auth.Options{}, err
 	}
 
-	dockerURL := dockerHost
+	podmanURL := podmanHost
 
-	u, err := url.Parse(dockerURL)
+	u, err := url.Parse(podmanURL)
 	if err != nil {
 		return "", &auth.Options{}, fmt.Errorf("Error parsing URL: %s", err)
 	}
@@ -55,7 +54,7 @@ func (mcc *MachineConnChecker) Check(h *host.Host) (string, *auth.Options, error
 		return "", &auth.Options{}, fmt.Errorf("Error checking and/or regenerating the certs: %s", err)
 	}
 
-	return dockerURL, authOptions, nil
+	return podmanURL, authOptions, nil
 }
 
 func checkCert(hostURL string, authOptions *auth.Options) error {

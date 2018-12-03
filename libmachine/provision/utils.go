@@ -17,14 +17,14 @@ import (
 	"github.com/boot2podman/machine/libmachine/mcnutils"
 )
 
-type DockerOptions struct {
-	EngineOptions     string
-	EngineOptionsPath string
+type EngineOptions struct {
+	EngineOptionsString string
+	EngineOptionsPath   string
 }
 
-func makeDockerOptionsDir(p Provisioner) error {
-	dockerDir := p.GetDockerOptionsDir()
-	if _, err := p.SSHCommand(fmt.Sprintf("sudo mkdir -p %s", dockerDir)); err != nil {
+func makeEngineOptionsDir(p Provisioner) error {
+	optionsDir := p.GetEngineOptionsDir()
+	if _, err := p.SSHCommand(fmt.Sprintf("sudo mkdir -p %s", optionsDir)); err != nil {
 		return err
 	}
 
@@ -32,14 +32,14 @@ func makeDockerOptionsDir(p Provisioner) error {
 }
 
 func setRemoteAuthOptions(p Provisioner) auth.Options {
-	dockerDir := p.GetDockerOptionsDir()
+	engineDir := p.GetEngineOptionsDir()
 	authOptions := p.GetAuthOptions()
 
 	// due to windows clients, we cannot use filepath.Join as the paths
 	// will be mucked on the linux hosts
-	authOptions.CaCertRemotePath = path.Join(dockerDir, "ca.pem")
-	authOptions.ServerCertRemotePath = path.Join(dockerDir, "server.pem")
-	authOptions.ServerKeyRemotePath = path.Join(dockerDir, "server-key.pem")
+	authOptions.CaCertRemotePath = path.Join(engineDir, "ca.pem")
+	authOptions.ServerCertRemotePath = path.Join(engineDir, "server.pem")
+	authOptions.ServerKeyRemotePath = path.Join(engineDir, "server-key.pem")
 
 	return authOptions
 }
@@ -196,72 +196,23 @@ func getFilesystemType(p Provisioner, directory string) (string, error) {
 	return fstype, nil
 }
 
-func checkDaemonUp(p Provisioner, dockerPort int) func() bool {
-	reDaemonListening := fmt.Sprintf(":%d\\s+.*:.*", dockerPort)
+func checkDaemonUp(p Provisioner) func() bool {
 	return func() bool {
-		// HACK: Check netstat's output to see if anyone's listening on the Docker API port.
-		netstatOut, err := p.SSHCommand("if ! type netstat 1>/dev/null; then ss -tln; else netstat -tln; fi")
+		// HACK: Check to see if anyone's listening on the Podman varlink API socket.
+		_, err := p.SSHCommand("sudo test -S /run/podman/io.podman")
 		if err != nil {
 			log.Warnf("Error running SSH command: %s", err)
 			return false
 		}
 
-		return matchNetstatOut(reDaemonListening, netstatOut)
+		return true
 	}
 }
 
-func WaitForDocker(p Provisioner, dockerPort int) error {
-	if err := mcnutils.WaitForSpecific(checkDaemonUp(p, dockerPort), 10, 3*time.Second); err != nil {
+func WaitForPodman(p Provisioner) error {
+	if err := mcnutils.WaitForSpecific(checkDaemonUp(p), 10, 3*time.Second); err != nil {
 		return NewErrDaemonAvailable(err)
 	}
 
-	return nil
-}
-
-// DockerClientVersion returns the version of the Docker client on the host
-// that ssh is connected to, e.g. "1.12.1".
-func DockerClientVersion(ssh SSHCommander) (string, error) {
-	// `docker version --format {{.Client.Version}}` would be preferable, but
-	// that fails if the server isn't running yet.
-	//
-	// output is expected to be something like
-	//
-	//     Docker version 1.12.1, build 7a86f89
-	output, err := ssh.SSHCommand("docker --version")
-	if err != nil {
-		return "", err
-	}
-
-	words := strings.Fields(output)
-	if len(words) < 3 || words[0] != "Docker" || words[1] != "version" {
-		return "", fmt.Errorf("DockerClientVersion: cannot parse version string from %q", output)
-	}
-
-	return strings.TrimRight(words[2], ","), nil
-}
-
-func waitForLockAptGetUpdate(ssh SSHCommander) error {
-	return waitForLock(ssh, "sudo apt-get update")
-}
-
-func waitForLock(ssh SSHCommander, cmd string) error {
-	var sshErr error
-	err := mcnutils.WaitFor(func() bool {
-		_, sshErr = ssh.SSHCommand(cmd)
-		if sshErr != nil {
-			if strings.Contains(sshErr.Error(), "Could not get lock") {
-				sshErr = nil
-				return false
-			}
-			return true
-		}
-		return true
-	})
-	if sshErr != nil {
-		return fmt.Errorf("Error running %q: %s", cmd, sshErr)
-	}
-	if err != nil {
-		return fmt.Errorf("Failed to obtain lock: %s", err)
-	}
 	return nil
 }

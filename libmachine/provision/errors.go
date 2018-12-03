@@ -14,7 +14,7 @@ type ErrDaemonAvailable struct {
 }
 
 func (e ErrDaemonAvailable) Error() string {
-	return fmt.Sprintf("Unable to verify the Docker daemon is listening: %s", e.wrappedErr)
+	return fmt.Sprintf("Unable to verify the Podman daemon is listening: %s", e.wrappedErr)
 }
 
 func NewErrDaemonAvailable(err error) ErrDaemonAvailable {

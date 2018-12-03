@@ -45,6 +45,6 @@ func TestEngineInstallUrlFlagDefault(t *testing.T) {
 }
 
 func TestEngineInstallUrlFlagSet(t *testing.T) {
-	options := createDriverOptionWithEngineInstall("https://test.docker.com")
+	options := createDriverOptionWithEngineInstall("https://test.podman.io")
 	assert.True(t, EngineInstallURLFlagSet(options))
 }

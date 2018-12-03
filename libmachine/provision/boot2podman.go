@@ -118,7 +118,7 @@ func (provisioner *Boot2PodmanProvisioner) SetHostname(hostname string) error {
 	return nil
 }
 
-func (provisioner *Boot2PodmanProvisioner) GetDockerOptionsDir() string {
+func (provisioner *Boot2PodmanProvisioner) GetEngineOptionsDir() string {
 	return "/var/lib/boot2podman"
 }
 
@@ -126,7 +126,7 @@ func (provisioner *Boot2PodmanProvisioner) GetAuthOptions() auth.Options {
 	return provisioner.AuthOptions
 }
 
-func (provisioner *Boot2PodmanProvisioner) GenerateDockerOptions(dockerPort int) (*DockerOptions, error) {
+func (provisioner *Boot2PodmanProvisioner) GenerateEngineOptions() (*EngineOptions, error) {
 	var (
 		engineCfg bytes.Buffer
 	)
@@ -143,9 +143,6 @@ EXTRA_ARGS='
 {{ end }}
 '
 CACERT={{.AuthOptions.CaCertRemotePath}}
-DOCKER_HOST='-H tcp://0.0.0.0:{{.DockerPort}}'
-DOCKER_STORAGE={{.EngineOptions.StorageDriver}}
-DOCKER_TLS=auto
 SERVERKEY={{.AuthOptions.ServerKeyRemotePath}}
 SERVERCERT={{.AuthOptions.ServerCertRemotePath}}
 
@@ -164,10 +161,10 @@ SERVERCERT={{.AuthOptions.ServerCertRemotePath}}
 
 	t.Execute(&engineCfg, engineConfigContext)
 
-	daemonOptsDir := path.Join(provisioner.GetDockerOptionsDir(), "profile")
-	return &DockerOptions{
-		EngineOptions:     engineCfg.String(),
-		EngineOptionsPath: daemonOptsDir,
+	daemonOptsDir := path.Join(provisioner.GetEngineOptionsDir(), "profile")
+	return &EngineOptions{
+		EngineOptionsString: engineCfg.String(),
+		EngineOptionsPath:   daemonOptsDir,
 	}, nil
 }
 
@@ -183,33 +180,6 @@ func (provisioner *Boot2PodmanProvisioner) GetOsReleaseInfo() (*OsRelease, error
 	return provisioner.OsReleaseInfo, nil
 }
 
-/*
-func (provisioner *Boot2PodmanProvisioner) AttemptIPContact(dockerPort int) {
-	ip, err := provisioner.Driver.GetIP()
-	if err != nil {
-		log.Warnf("Could not get IP address for created machine: %s", err)
-		return
-	}
-
-	if conn, err := net.DialTimeout("tcp", fmt.Sprintf("%s:%d", ip, dockerPort), 5*time.Second); err != nil {
-		log.Warnf(`
-This machine has been allocated an IP address, but Podman Machine could not
-reach it successfully.
-
-SSH for the machine should still work, but connecting to exposed ports, such as
-the Docker daemon port (usually <ip>:%d), may not work properly.
-
-You may need to add the route manually, or use another related workaround.
-
-This could be due to a VPN, proxy, or host file configuration issue.
-
-You also might want to clear any VirtualBox host only interfaces you are not using.`, engine.DefaultPort)
-	} else {
-		conn.Close()
-	}
-}
-*/
-
 func (provisioner *Boot2PodmanProvisioner) Provision(authOptions auth.Options, engineOptions engine.Options) error {
 	var (
 		err error
@@ -222,7 +192,7 @@ func (provisioner *Boot2PodmanProvisioner) Provision(authOptions auth.Options, e
 		return err
 	}
 
-	if err = makeDockerOptionsDir(provisioner); err != nil {
+	if err = makeEngineOptionsDir(provisioner); err != nil {
 		return err
 	}
 

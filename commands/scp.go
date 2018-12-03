@@ -100,7 +100,7 @@ func getScpCmd(src, dest string, recursive bool, delta bool, quiet bool, hostInf
 	sshArgs = append(sshArgs, srcOpts...)
 	sshArgs = append(sshArgs, destOpts...)
 
-	// Append actual arguments for the scp command (i.e. docker@<ip>:/path)
+	// Append actual arguments for the scp command (i.e. user@<ip>:/path)
 	locationArg, err := generateLocationArg(srcHost, srcUser, srcPath)
 	if err != nil {
 		return nil, err

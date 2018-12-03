@@ -19,7 +19,7 @@ func TestGetMountCmd(t *testing.T) {
 	if err != nil {
 		t.Skip("sshfs not found (install sshfs ?)")
 	}
-	cmd, err := getMountCmd("myfunhost:/home/docker/foo", "/tmp/foo", false, &hostInfoLoader)
+	cmd, err := getMountCmd("myfunhost:/home/tc/foo", "/tmp/foo", false, &hostInfoLoader)
 
 	expectedArgs := append(
 		baseSSHFSArgs,
@@ -29,7 +29,7 @@ func TestGetMountCmd(t *testing.T) {
 		"Port=234",
 		"-o",
 		"IdentityFile=/fake/keypath/id_rsa",
-		"root@12.34.56.78:/home/docker/foo",
+		"root@12.34.56.78:/home/tc/foo",
 		"/tmp/foo",
 	)
 	expectedCmd := exec.Command(path, expectedArgs...)
@@ -48,12 +48,12 @@ func TestGetMountCmdWithoutSshKey(t *testing.T) {
 	if err != nil {
 		t.Skip("sshfs not found (install sshfs ?)")
 	}
-	cmd, err := getMountCmd("myfunhost:/home/docker/foo", "", false, &hostInfoLoader)
+	cmd, err := getMountCmd("myfunhost:/home/tc/foo", "", false, &hostInfoLoader)
 
 	expectedArgs := append(
 		baseSSHFSArgs,
-		"user@1.2.3.4:/home/docker/foo",
-		"/home/docker/foo",
+		"user@1.2.3.4:/home/tc/foo",
+		"/home/tc/foo",
 	)
 	expectedCmd := exec.Command(path, expectedArgs...)
 
@@ -71,7 +71,7 @@ func TestGetMountCmdUnmount(t *testing.T) {
 	if err != nil {
 		t.Skip("fusermount not found (install fuse ?)")
 	}
-	cmd, err := getMountCmd("myfunhost:/home/docker/foo", "/tmp/foo", true, &hostInfoLoader)
+	cmd, err := getMountCmd("myfunhost:/home/tc/foo", "/tmp/foo", true, &hostInfoLoader)
 
 	expectedArgs := []string{
 		"-u",

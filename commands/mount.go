@@ -79,7 +79,7 @@ func getMountCmd(src, dest string, unmount bool, hostInfoLoader HostInfoLoader) 
 	// Append needed -i / private key flags to command.
 	sshArgs = append(sshArgs, srcOpts...)
 
-	// Append actual arguments for the sshfs command (i.e. docker@<ip>:/path)
+	// Append actual arguments for the sshfs command (i.e. user@<ip>:/path)
 	locationArg, err := generateLocationArg(srcHost, srcUser, srcPath)
 	if err != nil {
 		return nil, err

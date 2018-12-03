@@ -34,12 +34,12 @@ QWj3k3JDHCh4BQ7h1ZJIg4SnGCUsrQQ+M8TS4Z0YZ/bZ6ZTktJgQgWMn9Uum1GN9
 hXJ/fa/E9OJuRxTXou7J0WwrV9aX9sEM9syOANR88PcA1fSE7+wNSdj5ZCfY6mQn
 II9e8NZEf5ktPXCNi0LKI6R1berejwQI3KKHEFbdZ8SKn93HgDh/Ip/dFctj+zBt
 CAlTWS3abehlCERn6Ze9IfZBtpI=
------END CERTIFICATE-----' | sudo tee /etc/docker/ca.pem`,
+-----END CERTIFICATE-----' | sudo tee /etc/ssl/ca.pem`,
 			},
 			expected: []string{
 				"Some mundane log lines",
 				"IP is foo.bar",
-				`Secret here: printf '%s' '<REDACTED>' | sudo tee /etc/docker/ca.pem`,
+				`Secret here: printf '%s' '<REDACTED>' | sudo tee /etc/ssl/ca.pem`,
 			},
 		},
 		{
@@ -64,12 +64,12 @@ QWj3k3JDHCh4BQ7h1ZJIg4SnGCUsrQQ+M8TS4Z0YZ/bZ6ZTktJgQgWMn9Uum1GN9
 hXJ/fa/E9OJuRxTXou7J0WwrV9aX9sEM9syOANR88PcA1fSE7+wNSdj5ZCfY6mQn
 II9e8NZEf5ktPXCNi0LKI6R1berejwQI3KKHEFbdZ8SKn93HgDh/Ip/dFctj+zBt
 CAlTWS3abehlCERn6Ze9IfZBtpI=
------END RSA PRIVATE KEY-----' | sudo tee /etc/docker/server-key.pem`,
+-----END RSA PRIVATE KEY-----' | sudo tee /etc/ssl/server-key.pem`,
 			},
 			expected: []string{
 				"Some mundane log lines",
 				"IP is foo.bar",
-				`Secret here: printf '%s' '<REDACTED>' | sudo tee /etc/docker/server-key.pem`,
+				`Secret here: printf '%s' '<REDACTED>' | sudo tee /etc/ssl/server-key.pem`,
 			},
 		},
 		{

@@ -67,10 +67,10 @@ func TestGetInfoForRemoteScpArg(t *testing.T) {
 		sshKeyPath: "/fake/keypath/id_rsa",
 	}}
 
-	host, user, path, opts, err := getInfoForScpArg("myuser@myfunhost:/home/docker/foo", &hostInfoLoader)
+	host, user, path, opts, err := getInfoForScpArg("myuser@myfunhost:/home/tc/foo", &hostInfoLoader)
 	assert.Equal(t, "myfunhost", host.GetMachineName())
 	assert.Equal(t, "myuser", user)
-	assert.Equal(t, "/home/docker/foo", path)
+	assert.Equal(t, "/home/tc/foo", path)
 	assert.Equal(t, []string{"-o", `IdentityFile="/fake/keypath/id_rsa"`}, opts)
 	assert.NoError(t, err)
 
@@ -83,9 +83,9 @@ func TestGetInfoForRemoteScpArg(t *testing.T) {
 }
 
 func TestHostLocation(t *testing.T) {
-	arg, err := generateLocationArg(nil, "user1", "/home/docker/foo")
+	arg, err := generateLocationArg(nil, "user1", "/home/tc/foo")
 
-	assert.Equal(t, "/home/docker/foo", arg)
+	assert.Equal(t, "/home/tc/foo", arg)
 	assert.NoError(t, err)
 }
 
@@ -95,14 +95,14 @@ func TestRemoteLocation(t *testing.T) {
 		sshUsername: "root",
 	}
 
-	arg, err := generateLocationArg(&hostInfo, "", "/home/docker/foo")
+	arg, err := generateLocationArg(&hostInfo, "", "/home/tc/foo")
 
-	assert.Equal(t, "root@12.34.56.78:/home/docker/foo", arg)
+	assert.Equal(t, "root@12.34.56.78:/home/tc/foo", arg)
 	assert.NoError(t, err)
 
-	argWithUser, err := generateLocationArg(&hostInfo, "user1", "/home/docker/foo")
+	argWithUser, err := generateLocationArg(&hostInfo, "user1", "/home/tc/foo")
 
-	assert.Equal(t, "user1@12.34.56.78:/home/docker/foo", argWithUser)
+	assert.Equal(t, "user1@12.34.56.78:/home/tc/foo", argWithUser)
 	assert.NoError(t, err)
 }
 
@@ -114,7 +114,7 @@ func TestGetScpCmd(t *testing.T) {
 		sshKeyPath:  "/fake/keypath/id_rsa",
 	}}
 
-	cmd, err := getScpCmd("/tmp/foo", "myfunhost:/home/docker/foo", true, false, false, &hostInfoLoader)
+	cmd, err := getScpCmd("/tmp/foo", "myfunhost:/home/tc/foo", true, false, false, &hostInfoLoader)
 
 	expectedArgs := append(
 		baseSSHArgs,
@@ -127,7 +127,7 @@ func TestGetScpCmd(t *testing.T) {
 		"-o",
 		`IdentityFile="/fake/keypath/id_rsa"`,
 		"/tmp/foo",
-		"root@12.34.56.78:/home/docker/foo",
+		"root@12.34.56.78:/home/tc/foo",
 	)
 	expectedCmd := exec.Command("/usr/bin/scp", expectedArgs...)
 
@@ -141,14 +141,14 @@ func TestGetScpCmdWithoutSshKey(t *testing.T) {
 		sshUsername: "user",
 	}}
 
-	cmd, err := getScpCmd("/tmp/foo", "myfunhost:/home/docker/foo", true, false, false, &hostInfoLoader)
+	cmd, err := getScpCmd("/tmp/foo", "myfunhost:/home/tc/foo", true, false, false, &hostInfoLoader)
 
 	expectedArgs := append(
 		baseSSHArgs,
 		"-3",
 		"-r",
 		"/tmp/foo",
-		"user@1.2.3.4:/home/docker/foo",
+		"user@1.2.3.4:/home/tc/foo",
 	)
 	expectedCmd := exec.Command("/usr/bin/scp", expectedArgs...)
 
@@ -162,7 +162,7 @@ func TestGetScpCmdWithDelta(t *testing.T) {
 		sshUsername: "user",
 	}}
 
-	cmd, err := getScpCmd("/tmp/foo", "myfunhost:/home/docker/foo", true, true, false, &hostInfoLoader)
+	cmd, err := getScpCmd("/tmp/foo", "myfunhost:/home/tc/foo", true, true, false, &hostInfoLoader)
 
 	expectedArgs := append(
 		[]string{"--progress"},
@@ -170,7 +170,7 @@ func TestGetScpCmdWithDelta(t *testing.T) {
 		"ssh "+strings.Join(baseSSHArgs, " "),
 		"-r",
 		"/tmp/foo",
-		"user@1.2.3.4:/home/docker/foo",
+		"user@1.2.3.4:/home/tc/foo",
 	)
 	expectedCmd := exec.Command("/usr/bin/rsync", expectedArgs...)
 

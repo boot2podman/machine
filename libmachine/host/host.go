@@ -131,6 +131,15 @@ func (h *Host) runActionForState(action func() error, desiredState state.State) 
 	return mcnutils.WaitFor(drivers.MachineInState(h.Driver, desiredState))
 }
 
+func (h *Host) WaitForPodman() error {
+	provisioner, err := provision.DetectProvisioner(h.Driver)
+	if err != nil {
+		return err
+	}
+
+	return provision.WaitForPodman(provisioner)
+}
+
 func (h *Host) Start() error {
 	log.Infof("Starting %q...", h.Name)
 	if err := h.runActionForState(h.Driver.Start, state.Running); err != nil {
@@ -138,7 +147,8 @@ func (h *Host) Start() error {
 	}
 
 	log.Infof("Machine %q was started.", h.Name)
-	return nil
+
+	return h.WaitForPodman()
 }
 
 func (h *Host) Stop() error {
@@ -176,12 +186,7 @@ func (h *Host) Restart() error {
 		}
 	}
 
-	//return h.WaitForDocker()
-	return nil
-}
-
-func (h *Host) DockerVersion() (string, error) {
-	return "", nil
+	return h.WaitForPodman()
 }
 
 func (h *Host) Upgrade() error {

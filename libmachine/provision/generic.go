@@ -13,7 +13,7 @@ import (
 type GenericProvisioner struct {
 	SSHCommander
 	OsReleaseID       string
-	DockerOptionsDir  string
+	EngineOptionsDir  string
 	DaemonOptionsFile string
 	Packages          []string
 	OsReleaseInfo     *OsRelease
@@ -62,8 +62,8 @@ func (provisioner *GenericProvisioner) SetHostname(hostname string) error {
 	return nil
 }
 
-func (provisioner *GenericProvisioner) GetDockerOptionsDir() string {
-	return provisioner.DockerOptionsDir
+func (provisioner *GenericProvisioner) GetEngineOptionsDir() string {
+	return provisioner.EngineOptionsDir
 }
 
 func (provisioner *GenericProvisioner) CompatibleWithHost() bool {
@@ -82,7 +82,7 @@ func (provisioner *GenericProvisioner) GetOsReleaseInfo() (*OsRelease, error) {
 	return provisioner.OsReleaseInfo, nil
 }
 
-func (provisioner *GenericProvisioner) GenerateDockerOptions(dockerPort int) (*DockerOptions, error) {
+func (provisioner *GenericProvisioner) GenerateEngineOptions() (*EngineOptions, error) {
 	var (
 		engineCfg bytes.Buffer
 	)
@@ -91,9 +91,7 @@ func (provisioner *GenericProvisioner) GenerateDockerOptions(dockerPort int) (*D
 	provisioner.EngineOptions.Labels = append(provisioner.EngineOptions.Labels, driverNameLabel)
 
 	engineConfigTmpl := `
-DOCKER_OPTS='
--H tcp://0.0.0.0:{{.DockerPort}}
--H unix:///var/run/docker.sock
+ENGINE_OPTS='
 --storage-driver {{.EngineOptions.StorageDriver}}
 --tlsverify
 --tlscacert {{.AuthOptions.CaCertRemotePath}}
@@ -120,9 +118,9 @@ DOCKER_OPTS='
 
 	t.Execute(&engineCfg, engineConfigContext)
 
-	return &DockerOptions{
-		EngineOptions:     engineCfg.String(),
-		EngineOptionsPath: provisioner.DaemonOptionsFile,
+	return &EngineOptions{
+		EngineOptionsString: engineCfg.String(),
+		EngineOptionsPath:   provisioner.DaemonOptionsFile,
 	}, nil
 }
 
