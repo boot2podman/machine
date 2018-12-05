@@ -1,0 +1,34 @@
+[[projects]]
+  name = "github.com/codegangsta/cli"
+  packages = ["."]
+  revision = "0302d3914d2a6ad61404584cdae6e6dbc9c03599"
+
+[[projects]]
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  revision = "5215b55f46b2b919f50a1df0eaa5886afe4e3b3d"
+
+[[projects]]
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/skarademir/naturalsort"
+  packages = ["."]
+  revision = "69a5d87bef620f77ee8508db30c846b3b84b111e"
+
+[[projects]]
+  name = "github.com/stretchr/objx"
+  packages = ["."]
+  revision = "1a9d0bb9f541897e62256577b352fdbc1fb4fd94"
+
+[[projects]]
+  name = "github.com/stretchr/testify"
+  packages = [
+    "assert",
+    "mock"
+  ]
+  revision = "1f4a1643a57e798696635ea4c126e9127adb7d3c"
