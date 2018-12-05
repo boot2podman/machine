@@ -13,7 +13,6 @@ import (
 
 	"github.com/boot2podman/machine/libmachine/log"
 	"github.com/boot2podman/machine/libmachine/mcnutils"
-	"github.com/docker/docker/pkg/term"
 	"golang.org/x/crypto/ssh"
 	"golang.org/x/crypto/ssh/terminal"
 )
@@ -293,23 +292,23 @@ func (client *NativeClient) Shell(args ...string) error {
 		ssh.ECHO: 1,
 	}
 
-	fd := os.Stdin.Fd()
+	fd := int(os.Stdin.Fd())
 
-	if term.IsTerminal(fd) {
-		oldState, err := term.MakeRaw(fd)
+	if terminal.IsTerminal(fd) {
+		oldState, err := terminal.MakeRaw(fd)
 		if err != nil {
 			return err
 		}
 
-		defer term.RestoreTerminal(fd, oldState)
+		defer terminal.Restore(fd, oldState)
 
-		winsize, err := term.GetWinsize(fd)
+		winWidth, winHeight, err := terminal.GetSize(fd)
 		if err != nil {
 			termWidth = 80
 			termHeight = 24
 		} else {
-			termWidth = int(winsize.Width)
-			termHeight = int(winsize.Height)
+			termWidth = int(winWidth)
+			termHeight = int(winHeight)
 		}
 	}
 
