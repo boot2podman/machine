@@ -113,15 +113,28 @@ See https://github.com/varlink/libvarlink/tree/master/tool
 
 Only files on the virtual machine are seen by containers.
 
+``` console
+$ ls /tmp/foo
+bar
+$ podman-machine ssh box -- sudo podman run -v /tmp/foo:/foo busybox ls /foo
+error checking path "/tmp/foo": stat /tmp/foo: no such file or directory
+```
+
+This means that files to be used must be located there.
+
 There is currently no access to any network filesystems.
 
 In order to copy files, you can use the command `scp`:
 
-`podman-machine scp [machine:][path] [machine:][path]`
+``` console
+podman-machine scp [machine:][path] [machine:][path]
+```
 
 To mount files locally using [SSHFS](https://github.com/libfuse/sshfs), you can use `mount`:
 
-`podman-machine mount [machine:][path] [mountpoint]`
+``` console
+podman-machine mount [machine:][path] [mountpoint]
+```
 
 In order to make files persist, they need to be on a disk.
 
