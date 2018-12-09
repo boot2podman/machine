@@ -1,0 +1,20 @@
+digraph G {
+  rankdir=LR;
+  graph [fontname = "Source Sans Pro"];
+  node [fontname = "Source Sans Pro"];
+  edge [fontname = "Source Sans Pro"];
+
+  local [ label="Local\nport" ];
+  machine [ label="Machine\nport" ];
+  container [ label="Container\nport" ];
+  subgraph cluster_VM {
+    rankdir=LR;
+    style=filled;
+    color=lightskyblue;
+    machine container;
+    label = "VirtualBox";
+  }
+  local -> machine [ label="ssh -L" ];
+  machine -> local [ label="ip" ];
+  machine -> container [ label="publish" ];
+}

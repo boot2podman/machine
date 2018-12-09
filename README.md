@@ -124,6 +124,8 @@ This means that files to be used must be located there.
 
 There is currently no access to any network filesystems.
 
+![files](files.png)
+
 In order to copy files, you can use the command `scp`:
 
 ``` console
@@ -159,6 +161,8 @@ $ podman-machine ip
 Then you can forward local ports, over to the virtual machine.
 
 From there, they can access any ports published by containers.
+
+![ports](ports.png)
 
 This is done by starting a `ssh` command, as a background process.
 
