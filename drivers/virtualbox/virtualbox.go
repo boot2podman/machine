@@ -695,7 +695,9 @@ func (d *Driver) parseIPForMACFromIPAddr(ipAddrOutput string, macAddress string)
 	// of the interface with the given MAC address.
 
 	lines := strings.Split(ipAddrOutput, "\n")
-	returnNextIP := false
+	var ipAddress string
+	foundDevice := false
+	foundAddress := false
 
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
@@ -706,14 +708,33 @@ func (d *Driver) parseIPForMACFromIPAddr(ipAddrOutput string, macAddress string)
 				macBlock := strings.ToLower(vals[1])
 				macWithoutColons := strings.Replace(macBlock, ":", "", -1)
 				if macWithoutColons == macAddress { // we are in the correct device block
-					returnNextIP = true
+					foundDevice = true
+					foundAddress = false
 				}
 			}
-		} else if strings.HasPrefix(line, "inet") && !strings.HasPrefix(line, "inet6") && returnNextIP {
+		} else if strings.Contains(line, "ether") { // line contains MAC address
+			vals := strings.Split(line, "ether ")
+			if len(vals) >= 2 {
+				macBlock := strings.ToLower(vals[1][:strings.Index(vals[1], " ")])
+				macWithoutColons := strings.Replace(macBlock, ":", "", -1)
+				if macWithoutColons == macAddress { // we are in the correct device block
+					foundDevice = true
+				}
+			}
+		} else if strings.HasPrefix(line, "inet") && !strings.HasPrefix(line, "inet6") {
 			vals := strings.Split(line, "addr:")
 			if len(vals) >= 2 {
-				return vals[1][:strings.Index(vals[1], " ")], nil
+				ipAddress = vals[1][:strings.Index(vals[1], " ")]
+				foundAddress = true
+			} else {
+				vals = strings.Split(line, "inet ")
+				ipAddress = vals[1][:strings.Index(vals[1], " ")]
+				foundAddress = true
 			}
+		}
+
+		if foundDevice && foundAddress {
+			return ipAddress, nil
 		}
 	}
 

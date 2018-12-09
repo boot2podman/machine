@@ -186,11 +186,36 @@ func TestGetHostOnlyMACAddressWhenNoHostOnlyAdapter(t *testing.T) {
 	assert.Equal(t, err, errors.New("Machine does not have a host-only adapter"))
 }
 
-func TestParseIPForMACFromIPAddr(t *testing.T) {
+func TestParseIPForMACFromIPAddrBusybox(t *testing.T) {
 	driver := newTestDriver("default")
 
 	ipAddrOutput := "eth0      Link encap:Ethernet  HWaddr 00:44:88:AA:BB:CC\n          inet addr:1.2.3.4 Bcast:1.2.3.255  Mask:255.255.255.0\n" +
-	"eth1      Link encap:Ethernet  HWaddr 11:55:99:DD:EE:FF\n          inet addr:5.6.7.8 Bcast:5.6.7.255  Mask:255.255.255.0\n"
+		"eth1      Link encap:Ethernet  HWaddr 11:55:99:DD:EE:FF\n          inet addr:5.6.7.8 Bcast:5.6.7.255  Mask:255.255.255.0\n"
+
+	result, err := driver.parseIPForMACFromIPAddr(ipAddrOutput, "004488aabbcc")
+	assert.NoError(t, err)
+	assert.Equal(t, result, "1.2.3.4")
+
+	result, err = driver.parseIPForMACFromIPAddr(ipAddrOutput, "115599ddeeff")
+	assert.NoError(t, err)
+	assert.Equal(t, result, "5.6.7.8")
+
+	result, err = driver.parseIPForMACFromIPAddr(ipAddrOutput, "000000000000")
+	assert.Empty(t, result)
+	assert.Equal(t, err, errors.New("Could not find matching IP for MAC address 000000000000"))
+}
+
+func TestParseIPForMACFromIPAddrNetTools(t *testing.T) {
+	driver := newTestDriver("default")
+
+	ipAddrOutput := "eth0: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n" +
+		"        inet 1.2.3.4  netmask 255.255.255.0  broadcast 1.2.3.255\n" +
+		"        inet6 fe80::a00:27ff:1122:3344  prefixlen 64  scopeid 0x20<link>\n" +
+		"        ether 00:44:88:aa:bb:cc  txqueuelen 1000  (Ethernet)\n" +
+		"eth1: flags=4163<UP,BROADCAST,RUNNING,MULTICAST>  mtu 1500\n" +
+		"        inet 5.6.7.8  netmask 255.255.255.0  broadcast 5.6.7.255\n" +
+		"        inet6 fe80::a00:27ff:5566:7788  prefixlen 64  scopeid 0x20<link>\n" +
+		"        ether 11:55:99:dd:ee:ff  txqueuelen 1000  (Ethernet)\n"
 
 	result, err := driver.parseIPForMACFromIPAddr(ipAddrOutput, "004488aabbcc")
 	assert.NoError(t, err)
