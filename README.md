@@ -127,6 +127,44 @@ In order to make files persist, they need to be on a disk.
 
 The default mountpoint (for /dev/sda1) is: `/mnt/sda1`
 
+## Accessing ports
+
+Depending on the driver, the machine _might_ get its own IP.
+
+``` console
+$ podman-machine ip
+192.168.99.101
+```
+
+If you **don't** get a machine IP, then you can use SSH tunneling.
+
+``` console
+$ podman-machine ip
+127.0.0.1
+```
+
+Then you can forward local ports, over to the virtual machine.
+
+From there, they can access any ports published by containers.
+
+This is done by starting a `ssh` command, as a background process.
+
+``` console
+$ podman-machine ssh box -L 8080:localhost:8080 -N &
+[1] 4229
+$ podman-machine ssh box -- sudo podman run -d -p 8080:80 nginx
+18fde6761ea5df5c5170bc5c8d6709401b70957175ab8f6269e6024d9e577110
+```
+
+To stop the tunnel, just end the process (4229 above) using `kill`.
+
+``` console
+$ kill 4229
+[1]+  Terminated              podman-machine ssh box -L 8080:localhost:8080 -N
+$ podman-machine ssh box -- sudo podman stop 18fde6761ea5
+18fde6761ea5df5c5170bc5c8d6709401b70957175ab8f6269e6024d9e577110
+```
+
 ## Installing tools
 
 If you need to install e.g. `git`, you can download and install it:
