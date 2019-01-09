@@ -9,7 +9,6 @@ import (
 	"github.com/boot2podman/machine/drivers/errdriver"
 	"github.com/boot2podman/machine/libmachine/auth"
 	"github.com/boot2podman/machine/libmachine/cert"
-	"github.com/boot2podman/machine/libmachine/check"
 	"github.com/boot2podman/machine/libmachine/drivers"
 	"github.com/boot2podman/machine/libmachine/drivers/plugin/localbinary"
 	"github.com/boot2podman/machine/libmachine/drivers/rpc"
@@ -169,9 +168,15 @@ func (api *Client) performCreate(h *host.Host) error {
 
 	// We should check the connection to podman here
 	log.Info("Checking connection to Podman...")
-	if _, _, err = check.DefaultConnChecker.Check(h); err != nil {
-		return fmt.Errorf("Error checking the host: %s", err)
+	client, err := h.CreateSSHClient()
+	if err != nil {
+		return fmt.Errorf("Error creating SSH client: %s", err)
 	}
+	version, err := client.Output("podman --version")
+	if err != nil {
+		return fmt.Errorf("Error getting podman version: %s", err)
+	}
+	log.Debugf("%s", version)
 
 	log.Info("Podman is up and running!")
 	return nil

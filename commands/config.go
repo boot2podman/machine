@@ -3,11 +3,8 @@ package commands
 import (
 	"fmt"
 	"os"
-	"path/filepath"
 
-	"github.com/boot2podman/machine/commands/mcndirs"
 	"github.com/boot2podman/machine/libmachine"
-	"github.com/boot2podman/machine/libmachine/check"
 	"github.com/boot2podman/machine/libmachine/log"
 )
 
@@ -26,21 +23,31 @@ func cmdConfig(c CommandLine, api libmachine.API) error {
 		return err
 	}
 
-	podmanHost, _, err := check.DefaultConnChecker.Check(host)
-	if err != nil {
-		return fmt.Errorf("Error running connection boilerplate: %s", err)
+	if host.Driver == nil {
+		return err
 	}
 
-	log.Debug(podmanHost)
+	user := host.Driver.GetSSHUsername()
 
-	tlsCACert := filepath.Join(mcndirs.GetMachineDir(), host.Name, "ca.pem")
-	tlsCert := filepath.Join(mcndirs.GetMachineDir(), host.Name, "cert.pem")
-	tlsKey := filepath.Join(mcndirs.GetMachineDir(), host.Name, "key.pem")
+	addr, err := host.Driver.GetSSHHostname()
+	if err != nil {
+		return err
+	}
 
-	// TODO(nathanleclaire): These magic strings for the certificate file
-	// names should be cross-package constants.
-	fmt.Printf("--tlsverify\n--tlscacert=%q\n--tlscert=%q\n--tlskey=%q\n-H=%s\n",
-		tlsCACert, tlsCert, tlsKey, podmanHost)
+	port, err := host.Driver.GetSSHPort()
+	if err != nil {
+		return err
+	}
+
+	key := host.Driver.GetSSHKeyPath()
+
+	if addr != "" {
+		// always use root@ for socket
+		user = "root"
+	}
+
+	fmt.Printf("--username=%s\n--host=%s\n--port=%d\n--identity-file=%s\n",
+		user, addr, port, key)
 
 	return nil
 }
