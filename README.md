@@ -93,7 +93,7 @@ $ pypodman --help
 
 This will use environment variables to connect.
 
-See https://github.com/containers/libpod/tree/master/contrib/python
+See https://github.com/containers/python-podman/tree/master
 
 ### varlink
 
