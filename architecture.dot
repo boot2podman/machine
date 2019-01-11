@@ -10,7 +10,7 @@ digraph G {
     style=filled;
     color=lightskyblue;
     machine;
-    label = "VirtualBox";
+    label = "Hypervisor";
   }
   pypodman -> machine [ label="ssh" ];
 }

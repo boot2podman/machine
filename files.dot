@@ -12,7 +12,7 @@ digraph G {
     style=filled;
     color=lightskyblue;
     machine container;
-    label = "VirtualBox";
+    label = "Hypervisor";
   }
   local -> machine [ label="scp" ];
   machine -> local [ label="sshfs" ];
