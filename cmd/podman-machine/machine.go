@@ -9,7 +9,7 @@ import (
 
 	"github.com/boot2podman/machine/commands"
 	"github.com/boot2podman/machine/commands/mcndirs"
-	"github.com/boot2podman/machine/drivers/none"
+	"github.com/boot2podman/machine/drivers/generic"
 	"github.com/boot2podman/machine/drivers/qemu"
 	"github.com/boot2podman/machine/drivers/virtualbox"
 	"github.com/boot2podman/machine/libmachine/drivers/plugin"
@@ -149,8 +149,8 @@ func main() {
 
 func runDriver(driverName string) {
 	switch driverName {
-	case "none":
-		plugin.RegisterDriver(none.NewDriver("", ""))
+	case "generic":
+		plugin.RegisterDriver(generic.NewDriver("", ""))
 	case "virtualbox":
 		plugin.RegisterDriver(virtualbox.NewDriver("", ""))
 	case "qemu":

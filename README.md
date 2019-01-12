@@ -201,7 +201,7 @@ This was for the default tinycore distro, other ISO might differ...
 
 These core driver plugins are bundled:
 
-* None
+* Generic
 * VirtualBox
 * QEMU (KVM)
 

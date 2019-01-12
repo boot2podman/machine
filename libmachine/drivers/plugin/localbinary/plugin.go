@@ -17,7 +17,7 @@ var (
 	// plugin server.
 	defaultTimeout               = 10 * time.Second
 	CurrentBinaryIsPodmanMachine = false
-	CoreDrivers                  = []string{"none", "virtualbox", "qemu"}
+	CoreDrivers                  = []string{"generic", "none", "virtualbox", "qemu"}
 )
 
 const (
