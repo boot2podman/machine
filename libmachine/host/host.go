@@ -12,6 +12,7 @@ import (
 	"github.com/boot2podman/machine/libmachine/mcnerror"
 	"github.com/boot2podman/machine/libmachine/mcnutils"
 	"github.com/boot2podman/machine/libmachine/provision"
+	"github.com/boot2podman/machine/libmachine/provision/pkgaction"
 	"github.com/boot2podman/machine/libmachine/ssh"
 	"github.com/boot2podman/machine/libmachine/state"
 )
@@ -200,6 +201,16 @@ func (h *Host) Upgrade() error {
 		if err := h.Start(); err != nil {
 			return err
 		}
+	}
+
+	provisioner, err := provision.DetectProvisioner(h.Driver)
+	if err != nil {
+		return err
+	}
+
+	log.Info("Upgrading podman...")
+	if err := provisioner.Package("podman", pkgaction.Upgrade); err != nil {
+		return err
 	}
 
 	return err
