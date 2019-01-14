@@ -1,6 +1,7 @@
 package commands
 
 import (
+	"fmt"
 	"io"
 	"os"
 
@@ -26,6 +27,17 @@ func printVersion(c CommandLine, api libmachine.API, out io.Writer) error {
 		return err
 	}
 
-	_ = host
+	client, err := host.CreateSSHClient()
+	if err != nil {
+		return err
+	}
+
+	version, err := client.Output("podman version --format '{{ .Version }}'")
+	if err != nil {
+		return err
+	}
+
+	fmt.Fprintln(out, version)
+
 	return nil
 }
