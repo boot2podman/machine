@@ -42,6 +42,7 @@ type Driver struct {
 	Program          string
 	Display          bool
 	DisplayType      string
+	NetVlan          bool
 	Nographic        bool
 	VirtioDrives     bool
 	Network          string
@@ -94,6 +95,10 @@ func (d *Driver) GetCreateFlags() []mcnflag.Flag {
 			EnvVar: "QEMU_DISPLAY_TYPE",
 			Name:   "qemu-display-type",
 			Usage:  "Select type of display",
+		},
+		mcnflag.BoolFlag{
+			Name:  "qemu-net-vlan",
+			Usage: "Use -net vlan instead of -netdev",
 		},
 		mcnflag.BoolFlag{
 			Name:  "qemu-nographic",
@@ -200,6 +205,7 @@ func (d *Driver) SetConfigFromFlags(flags drivers.DriverOptions) error {
 	d.Program = flags.String("qemu-program")
 	d.Display = flags.Bool("qemu-display")
 	d.DisplayType = flags.String("qemu-display-type")
+	d.NetVlan = flags.Bool("qemu-net-vlan")
 	d.Nographic = flags.Bool("qemu-nographic")
 	d.VirtioDrives = flags.Bool("qemu-virtio-drives")
 	d.Network = flags.String("qemu-network")
@@ -454,23 +460,44 @@ func (d *Driver) Start() error {
 		"-pidfile", d.pidfilePath(),
 	)
 
-	if d.Network == "user" {
-		startCmd = append(startCmd,
-			"-net", "nic,vlan=0,model=virtio",
-			"-net", fmt.Sprintf("user,vlan=0,hostfwd=tcp::%d-:22,hostname=%s", d.SSHPort, d.GetMachineName()),
-		)
-	} else if d.Network == "tap" {
-		startCmd = append(startCmd,
-			"-net", "nic,vlan=0,model=virtio",
-			"-net", fmt.Sprintf("tap,vlan=0,ifname=%s,script=no,downscript=no", d.NetworkInterface),
-		)
-	} else if d.Network == "bridge" {
-		startCmd = append(startCmd,
-			"-net", "nic,vlan=0,model=virtio",
-			"-net", fmt.Sprintf("bridge,vlan=0,br=%s", d.NetworkBridge),
-		)
+	if d.NetVlan {
+		if d.Network == "user" {
+			startCmd = append(startCmd,
+				"-net", "nic,vlan=0,model=virtio",
+				"-net", fmt.Sprintf("user,vlan=0,hostfwd=tcp::%d-:22,hostname=%s", d.SSHPort, d.GetMachineName()),
+			)
+		} else if d.Network == "tap" {
+			startCmd = append(startCmd,
+				"-net", "nic,vlan=0,model=virtio",
+				"-net", fmt.Sprintf("tap,vlan=0,ifname=%s,script=no,downscript=no", d.NetworkInterface),
+			)
+		} else if d.Network == "bridge" {
+			startCmd = append(startCmd,
+				"-net", "nic,vlan=0,model=virtio",
+				"-net", fmt.Sprintf("bridge,vlan=0,br=%s", d.NetworkBridge),
+			)
+		} else {
+			log.Errorf("Unknown network: %s", d.Network)
+		}
 	} else {
-		log.Errorf("Unknown network: %s", d.Network)
+		if d.Network == "user" {
+			startCmd = append(startCmd,
+				"-device", "virtio-net,netdev=n0",
+				"-netdev", fmt.Sprintf("user,id=n0,hostfwd=tcp::%d-:22,hostname=%s", d.SSHPort, d.GetMachineName()),
+			)
+		} else if d.Network == "tap" {
+			startCmd = append(startCmd,
+				"-device", "virtio-net,netdev=n0",
+				"-netdev", fmt.Sprintf("tap,id=n0,ifname=%s,script=no,downscript=no", d.NetworkInterface),
+			)
+		} else if d.Network == "bridge" {
+			startCmd = append(startCmd,
+				"-device", "virtio-net,netdev=n0",
+				"-netdev", fmt.Sprintf("bridge,id=n0,br=%s", d.NetworkBridge),
+			)
+		} else {
+			log.Errorf("Unknown network: %s", d.Network)
+		}
 	}
 
 	startCmd = append(startCmd, "-daemonize")
