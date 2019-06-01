@@ -295,7 +295,7 @@ func attemptGetHostState(h *host.Host, stateQueryChan chan<- HostListItem) {
 		engineOptions = h.HostOptions.EngineOptions
 	}
 
-	activeHost := isActive(currentState, url)
+	activeHost := isActive(currentState, h.Name)
 	active := "-"
 	if activeHost {
 		active = "*"
@@ -385,8 +385,8 @@ func sortHostListItemsByName(items []HostListItem) {
 	}
 }
 
-func isActive(currentState state.State, hostURL string) bool {
-	return currentState == state.Running && hostURL == os.Getenv("PODMAN_HOST")
+func isActive(currentState state.State, hostName string) bool {
+	return currentState == state.Running && hostName == os.Getenv("PODMAN_MACHINE_NAME")
 }
 
 func urlPort(urlWithPort string) string {
