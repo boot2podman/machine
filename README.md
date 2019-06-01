@@ -113,7 +113,7 @@ $ varlink call io.podman.GetVersion
 $ varlink help io.podman
 ```
 
-You might need `--bridge="$VARLINK_BRIDGE"`.
+You might need `--bridge="$PODMAN_VARLINK_BRIDGE"`.
 
 See https://github.com/varlink/libvarlink/tree/master/tool
 
