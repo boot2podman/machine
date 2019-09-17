@@ -554,11 +554,19 @@ func TestShellCfgUnset(t *testing.T) {
 }
 
 type FakeRootSSHClientCreator struct {
+	extclient *ssh.ExternalClient
 	rootclient *ssh.ExternalClient
 }
 
 func (fsc *FakeRootSSHClientCreator) CreateSSHClient(d drivers.Driver) (ssh.Client, error) {
 	return nil, nil
+}
+
+func (fsc *FakeRootSSHClientCreator) CreateExternalSSHClient(d drivers.Driver) (*ssh.ExternalClient, error) {
+	if fsc.extclient == nil {
+		fsc.extclient = &ssh.ExternalClient{}
+	}
+	return fsc.extclient, nil
 }
 
 func (fsc *FakeRootSSHClientCreator) CreateExternalRootSSHClient(d drivers.Driver) (*ssh.ExternalClient, error) {

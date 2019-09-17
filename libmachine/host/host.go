@@ -24,6 +24,7 @@ var (
 
 type SSHClientCreator interface {
 	CreateSSHClient(d drivers.Driver) (ssh.Client, error)
+	CreateExternalSSHClient(d drivers.Driver) (*ssh.ExternalClient, error)
 	CreateExternalRootSSHClient(d drivers.Driver) (*ssh.ExternalClient, error)
 }
 
@@ -87,6 +88,34 @@ func (creator *StandardSSHClientCreator) CreateSSHClient(d drivers.Driver) (ssh.
 	}
 
 	return ssh.NewClient(d.GetSSHUsername(), addr, port, auth)
+}
+
+func (h *Host) CreateExternalSSHClient() (*ssh.ExternalClient, error) {
+	return stdSSHClientCreator.CreateExternalSSHClient(h.Driver)
+}
+
+func (creator *StandardSSHClientCreator) CreateExternalSSHClient(d drivers.Driver) (*ssh.ExternalClient, error) {
+	sshBinaryPath, err := exec.LookPath("ssh")
+	if err != nil {
+		return &ssh.ExternalClient{}, err
+	}
+
+	addr, err := d.GetSSHHostname()
+	if err != nil {
+		return &ssh.ExternalClient{}, err
+	}
+
+	port, err := d.GetSSHPort()
+	if err != nil {
+		return &ssh.ExternalClient{}, err
+	}
+
+	auth := &ssh.Auth{}
+	if d.GetSSHKeyPath() != "" {
+		auth.Keys = []string{d.GetSSHKeyPath()}
+	}
+
+	return ssh.NewExternalClient(sshBinaryPath, d.GetSSHUsername(), addr, port, auth)
 }
 
 func (h *Host) CreateExternalRootSSHClient() (*ssh.ExternalClient, error) {
