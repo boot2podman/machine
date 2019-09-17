@@ -28,6 +28,24 @@ You also need a supported Virtual Machine environment, such as [VirtualBox](http
 
 Additional VM environments are possible too, after installing third party machine drivers.
 
+## ISO image
+
+The default is to use the latest version of `boot2podman.iso`:
+
+<https://github.com/boot2podman/boot2podman/releases/latest/download/boot2podman.iso>
+
+`108M	boot2podman.iso`
+
+But it is also possible to use a version based on [Fedora](https://fedoraproject.org) instead:
+
+<https://github.com/boot2podman/boot2podman-fedora-iso/releases/latest/download/boot2podman-fedora.iso>
+
+`367M	boot2podman-fedora.iso`
+
+If the above URLs do not work, you can also download the file...
+
+Then you can use a `file://` URL to choose the ISO image to use.
+
 ## Getting Started
 
 ``` console
