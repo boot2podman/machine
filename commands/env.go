@@ -15,7 +15,7 @@ import (
 
 const (
 	envTmpl    = `{{ .Prefix }}PODMAN_USER{{ .Delimiter }}{{ .PodmanUser }}{{ .Suffix }}{{ .Prefix }}PODMAN_HOST{{ .Delimiter }}{{ .PodmanHost }}{{ .Suffix }}{{ .Prefix }}PODMAN_PORT{{ .Delimiter }}{{ .PodmanPort }}{{ .Suffix }}{{ .Prefix }}PODMAN_IDENTITY_FILE{{ .Delimiter }}{{ .IdentityFile }}{{ .Suffix }}{{ if .KnownHosts }}{{ .Prefix }}PODMAN_KNOWN_HOSTS{{ .Delimiter }}{{ .KnownHosts }}{{ .Suffix }}{{else}}{{ .Prefix }}PODMAN_IGNORE_HOSTS{{ .Delimiter }}true{{ .Suffix }}{{end}}{{ .Prefix }}PODMAN_MACHINE_NAME{{ .Delimiter }}{{ .MachineName }}{{ .Suffix }}{{ if .ComposePathsVar }}{{ .Prefix }}COMPOSE_CONVERT_WINDOWS_PATHS{{ .Delimiter }}true{{ .Suffix }}{{end}}{{ if .NoProxyVar }}{{ .Prefix }}{{ .NoProxyVar }}{{ .Delimiter }}{{ .NoProxyValue }}{{ .Suffix }}{{end}}{{ .UsageHint }}`
-	bridgeTmpl = `{{ .Prefix }}VARLINK_BRIDGE{{ .Delimiter }}{{ .VarlinkBridge }}{{ .Suffix }}{{ .Prefix }}PODMAN_VARLINK_BRIDGE{{ .Delimiter }}{{ .VarlinkBridge }}{{ .Suffix }}{{ .Prefix }}PODMAN_MACHINE_NAME{{ .Delimiter }}{{ .MachineName }}{{ .Suffix }}{{ .UsageHint }}`
+	bridgeTmpl = `{{ .Prefix }}PODMAN_VARLINK_BRIDGE{{ .Delimiter }}{{ .VarlinkBridge }}{{ .Suffix }}{{ .Prefix }}PODMAN_MACHINE_NAME{{ .Delimiter }}{{ .MachineName }}{{ .Suffix }}{{ .UsageHint }}`
 )
 
 var (
