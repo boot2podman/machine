@@ -585,11 +585,11 @@ func TestVarlink(t *testing.T) {
 	defaultUsageHinter = &SimpleUsageHintGenerator{usageHint}
 
 	sshBinaryPath := "/usr/bin/ssh"
-	sshBaseArgs := "-F /dev/null -o LogLevel=quiet-o root@localhost"
+	sshBaseArgs := "-F /dev/null -o LogLevel=quiet-o user@localhost"
 
-	cc := FakeRootSSHClientCreator{rootclient: &ssh.ExternalClient{}}
-	cc.rootclient.BinaryPath = sshBinaryPath
-	cc.rootclient.BaseArgs = strings.Split(sshBaseArgs, " ")
+	cc := FakeRootSSHClientCreator{extclient: &ssh.ExternalClient{}}
+	cc.extclient.BinaryPath = sshBinaryPath
+	cc.extclient.BaseArgs = strings.Split(sshBaseArgs, " ")
 
 	var tests = []struct {
 		description      string
@@ -629,7 +629,7 @@ func TestVarlink(t *testing.T) {
 				Suffix:        "\"\n",
 				UsageHint:     usageHint,
 				MachineName:   defaultMachineName,
-				VarlinkBridge: sshBinaryPath + " " + sshBaseArgs + " varlink bridge",
+				VarlinkBridge: sshBinaryPath + " " + sshBaseArgs + " sudo varlink bridge",
 			},
 			expectedErr: nil,
 		},

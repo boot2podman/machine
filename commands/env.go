@@ -132,14 +132,14 @@ func shellCfgSet(c CommandLine, api libmachine.API) (*ShellConfig, error) {
 
 	} else if host.Driver != nil {
 
-		client, err := host.CreateExternalRootSSHClient()
+		client, err := host.CreateExternalSSHClient()
 		if err != nil {
 			return nil, err
 		}
 
 		command := []string{client.BinaryPath}
 		command = append(command, client.BaseArgs...)
-		command = append(command, "varlink", "bridge")
+		command = append(command, "sudo", "varlink", "bridge")
 		bridge := strings.Join(command, " ")
 
 		shellCfg = &ShellConfig{
