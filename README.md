@@ -89,6 +89,22 @@ Show the available commands using the help:
 $ podman-machine ssh box -- sudo podman --help
 ```
 
+### podman-remote
+
+Set up the `$PODMAN_VARLINK_BRIDGE` variable:
+
+``` bash
+$ podman-machine env box --varlink
+$ eval $(podman-machine env box --varlink)
+```
+
+Then the commands will run remotely over ssh:
+
+``` bash
+$ podman-remote version
+$ podman-remote --help
+```
+
 ### pypodman
 
 Or you can use the `pypodman` tool remotely:
