@@ -42,6 +42,10 @@ But it is also possible to use a version based on [Fedora](https://fedoraproject
 
 `367M	boot2podman-fedora.iso`
 
+The tool will _automatically_ download, optionally with parameter:
+
+`--virtualbox-boot2podman-url`
+
 If the above URLs do not work, you can also download the file...
 
 Then you can use a `file://` URL to choose the ISO image to use.
