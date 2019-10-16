@@ -26,6 +26,8 @@ Get the version for your operating system and architecture, and put it in your p
 
 You also need a supported Virtual Machine environment, such as [VirtualBox](https://virtualbox.org) or [QEMU](https://qemu.org).
 
+You will also need an SSH client installed for the varlink bridge on windows, such as [SSH for Windows](https://docs.microsoft.com/en-us/windows-server/administration/openssh/openssh_install_firstuse)
+
 Additional VM environments are possible too, after installing third party machine drivers.
 
 ## ISO image
@@ -115,9 +117,16 @@ $ podman-machine ssh box -- sudo podman --help
 
 Set up the `$PODMAN_VARLINK_BRIDGE` variable:
 
+#### Bash
 ``` bash
 $ podman-machine env box --varlink
 $ eval $(podman-machine env box --varlink)
+```
+
+#### Powershell
+``` powershell
+> podman-machine env box --varlink
+> & podman-machine env box --varlink | Invoke-Expression
 ```
 
 Then the commands will run remotely over ssh:
