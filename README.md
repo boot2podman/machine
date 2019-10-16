@@ -124,7 +124,7 @@ $ eval $(podman-machine env box --varlink)
 ```
 
 #### Powershell
-``` bash
+``` powershell
 > podman-machine env box --varlink
 > & podman-machine env box --varlink | Invoke-Expression
 ```
