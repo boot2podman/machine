@@ -142,6 +142,24 @@ $ podman-remote version
 $ podman-remote --help
 ```
 
+See https://github.com/containers/libpod/blob/master/docs/podman-remote.1.md
+
+Binaries can be found in: https://github.com/boot2podman/libpod/releases
+
+Get the version for your operating system and architecture, and put it in your path:
+
+### Linux (GNU)
+
+`podman-remote-linux -> podman-remote` (or maybe just `podman`)
+
+### Darwin (OS X)
+
+`podman-remote-darwin -> podman`
+
+### Windows
+
+`podman-remote-windows.exe -> podman.exe`
+
 ### pypodman
 
 Or you can use the `pypodman` tool remotely:
