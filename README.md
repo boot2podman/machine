@@ -113,6 +113,12 @@ Show the available commands using the help:
 $ podman-machine ssh box -- sudo podman --help
 ```
 
+If you don't have `ssh` installed, you can run:
+
+```
+podman-machine --native-ssh ssh
+```
+
 ### podman-remote
 
 Set up the `$PODMAN_VARLINK_BRIDGE` variable:
