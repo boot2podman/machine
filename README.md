@@ -16,14 +16,14 @@ Get the version for your operating system and architecture, and put it in your p
 
 ```bash
 mv podman-machine.linux-amd64 <your-bin-dir>/podman-machine
-chown +x podman-machine
+chmod +x podman-machine
 ```
 
 ### Darwin (OS X)
 
 ```bash
 mv podman-machine.darwin-amd64 <your-bin-dir>/podman-machine
-chown +x podman-machine
+chmod +x podman-machine
 ```
 
 ### Windows
