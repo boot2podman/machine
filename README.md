@@ -10,15 +10,21 @@ configures the Podman client to talk to them.
 
 Binaries can be found in: https://github.com/boot2podman/machine/releases
 
-Get the version for your operating system and architecture, and put it in your path:
+Get the version for your operating system and architecture, and put it in your path, adding executable permissions if needed.
 
 ### Linux (GNU)
 
-`podman-machine.linux-amd64 -> podman-machine`
+```bash
+mv podman-machine.linux-amd64 <your-bin-dir>/podman-machine
+chown +x podman-machine
+```
 
 ### Darwin (OS X)
 
-`podman-machine.darwin-amd64 -> podman-machine`
+```bash
+mv podman-machine.darwin-amd64 <your-bin-dir>/podman-machine
+chown +x podman-machine
+```
 
 ### Windows
 
