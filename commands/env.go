@@ -139,7 +139,7 @@ func shellCfgSet(c CommandLine, api libmachine.API) (*ShellConfig, error) {
 
 		command := []string{client.BinaryPath}
 		command = append(command, client.BaseArgs...)
-		command = append(command, "sudo", "varlink", "bridge")
+		command = append(command, "--", "sudo", "varlink", "-A", `\'podman varlink \\\$VARLINK_ADDRESS\'`, "bridge")
 		bridge := strings.Join(command, " ")
 
 		shellCfg = &ShellConfig{
