@@ -629,7 +629,7 @@ func TestVarlink(t *testing.T) {
 				Suffix:        "\"\n",
 				UsageHint:     usageHint,
 				MachineName:   defaultMachineName,
-				VarlinkBridge: sshBinaryPath + " " + sshBaseArgs + " sudo varlink bridge",
+				VarlinkBridge: sshBinaryPath + " " + sshBaseArgs + " -- sudo varlink -A \\'podman varlink \\\\\\$VARLINK_ADDRESS\\' bridge",
 			},
 			expectedErr: nil,
 		},
