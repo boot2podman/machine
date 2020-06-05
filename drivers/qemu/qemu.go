@@ -45,6 +45,7 @@ type Driver struct {
 	NetVlan          bool
 	Nographic        bool
 	VirtioDrives     bool
+	HVF              bool
 	Network          string
 	PrivateNetwork   string
 	Boot2PodmanURL   string
@@ -108,6 +109,10 @@ func (d *Driver) GetCreateFlags() []mcnflag.Flag {
 			EnvVar: "QEMU_VIRTIO_DRIVES",
 			Name:   "qemu-virtio-drives",
 			Usage:  "Use virtio for drives (cdrom and disk)",
+		},
+		mcnflag.BoolFlag{
+			Name:  "qemu-hvf",
+			Usage: "Use the macOS Hypervisor.framework",
 		},
 		mcnflag.StringFlag{
 			Name:  "qemu-network",
@@ -208,6 +213,7 @@ func (d *Driver) SetConfigFromFlags(flags drivers.DriverOptions) error {
 	d.NetVlan = flags.Bool("qemu-net-vlan")
 	d.Nographic = flags.Bool("qemu-nographic")
 	d.VirtioDrives = flags.Bool("qemu-virtio-drives")
+	d.HVF = flags.Bool("qemu-hvf")
 	d.Network = flags.String("qemu-network")
 	d.Boot2PodmanURL = flags.String("qemu-boot2podman-url")
 	d.NetworkInterface = flags.String("qemu-network-interface")
@@ -501,6 +507,11 @@ func (d *Driver) Start() error {
 	}
 
 	startCmd = append(startCmd, "-daemonize")
+
+	if d.HVF {
+		startCmd = append(startCmd, "-accel", "hvf")
+		startCmd = append(startCmd, "-cpu", "host")
+	}
 
 	// other options
 	// "-enable-kvm" if its available
