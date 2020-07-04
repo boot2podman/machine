@@ -6,6 +6,9 @@ configures the Podman client to talk to them.
 
 ![architecture](architecture.png)
 
+| :exclamation:  Only works with Podman version 1 |
+|-------------------------------------------------|
+
 ## Download
 
 Binaries can be found in: https://github.com/boot2podman/machine/releases
