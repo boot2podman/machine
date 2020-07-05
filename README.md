@@ -6,8 +6,9 @@ configures the Podman client to talk to them.
 
 ![architecture](architecture.png)
 
-| :exclamation:  Only works with Podman version 1 |
-|-------------------------------------------------|
+| :exclamation:  Only works with Podman v1, due to breaking changes in Podman v2 |
+|--------------------------------------------------------------------------------|
+| For details see <https://podman.io/blogs/2020/06/29/podman-v2-announce.html>   |
 
 ## Download
 
