@@ -152,7 +152,7 @@ $ podman-remote version
 $ podman-remote --help
 ```
 
-See https://github.com/containers/libpod/blob/master/docs/podman-remote.1.md
+See https://github.com/containers/libpod/blob/master/docs/source/markdown/podman-remote.1.md
 
 Binaries can be found in: https://github.com/boot2podman/libpod/releases
 
