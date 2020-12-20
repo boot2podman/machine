@@ -1,3 +1,9 @@
+# DEPRECATED
+
+Podman Machine is now deprecated. Users should try using [Vagrant](https://vagrantup.com/) instead.
+
+Podman itself is **only** available for Linux systems, not Mac or Windows.
+
 # Podman Machine
 
 Machine lets you create Podman hosts on your computer.
