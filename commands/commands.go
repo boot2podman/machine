@@ -13,7 +13,7 @@ import (
 	"github.com/boot2podman/machine/libmachine/mcnutils"
 	"github.com/boot2podman/machine/libmachine/persist"
 	"github.com/boot2podman/machine/libmachine/ssh"
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 )
 
 const (

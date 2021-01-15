@@ -16,7 +16,7 @@ import (
 	"github.com/boot2podman/machine/libmachine/drivers/plugin/localbinary"
 	"github.com/boot2podman/machine/libmachine/log"
 	"github.com/boot2podman/machine/version"
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 )
 
 var AppHelpTemplate = `Usage: {{.Name}} {{if .Flags}}[OPTIONS] {{end}}COMMAND [arg...]

@@ -21,7 +21,7 @@ import (
 	"github.com/boot2podman/machine/libmachine/log"
 	"github.com/boot2podman/machine/libmachine/mcnerror"
 	"github.com/boot2podman/machine/libmachine/mcnflag"
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 )
 
 var (

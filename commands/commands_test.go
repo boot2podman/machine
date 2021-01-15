@@ -12,7 +12,7 @@ import (
 	"github.com/boot2podman/machine/libmachine/hosttest"
 	"github.com/boot2podman/machine/libmachine/provision"
 	"github.com/boot2podman/machine/libmachine/state"
-	"github.com/codegangsta/cli"
+	"github.com/urfave/cli"
 	"github.com/stretchr/testify/assert"
 )
 
