@@ -1,3 +1,4 @@
+.PHONY: clean all
 # Initialize version and gc flags
 GO_LDFLAGS := -X `go list ./version`.GitCommit=`git rev-parse --short HEAD 2>/dev/null`
 GO_GCFLAGS :=
@@ -10,6 +11,7 @@ podman-machine: $(GO_SRC)
 %.png: %.dot
 	dot -Tpng $^ -o $@
 
+.PHONY: cross
 cross: podman-machine.linux-amd64 podman-machine.darwin-amd64 podman-machine.windows-amd64
 
 podman-machine.linux-amd64: $(GO_SRC)
