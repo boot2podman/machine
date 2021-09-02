@@ -1,6 +1,16 @@
 # DEPRECATED
 
-Podman Machine is now deprecated. Users should try using [Vagrant](https://vagrantup.com/) instead.
+Podman v3.3 now has a `podman machine` included, different from `podman-machine`
+
+This is a **new** feature based on QEMU and CoreOS, unlike the old one (described here)<br />
+which is based on Docker Machine and Boot2Docker, as was available in Docker Toolbox...
+
+See also: <https://boot2podman.github.io/2020/11/03/boot2podman-project.html>
+
+Podman Machine (old) is now deprecated. Users should try using [Vagrant](https://vagrantup.com/) instead.<br />
+You can create a similar VM, running Fedora (for podman) or Ubuntu (for docker)
+
+Details: <https://boot2podman.github.io/2020/07/22/machine-replacement.html>
 
 Podman itself is **only** available for Linux systems, not Mac or Windows.
 
@@ -15,6 +25,8 @@ configures the Podman client to talk to them.
 | :exclamation:  Only works with Podman v1, due to breaking changes in Podman v2 |
 |--------------------------------------------------------------------------------|
 | For details see <https://podman.io/blogs/2020/06/29/podman-v2-announce.html>   |
+
+For Podman version 2, 3 and 4 please see the documentation at <https://podman.io/>
 
 ## Download
 
