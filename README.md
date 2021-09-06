@@ -1,8 +1,10 @@
 # DEPRECATED
 
-Podman v3.3 now has a `podman machine` included, different from `podman-machine`
+Podman v3.3 now has a `podman machine` included, different from `podman-machine`:
 
-This is a **new** feature based on QEMU and CoreOS, unlike the old one (described here)<br />
+<https://podman.io/community/meeting/notes/2021-04-06/#podman-on-mac-preview>
+
+That is a **new** feature based on QEMU and CoreOS, unlike the old one (described here)<br />
 which is based on Docker Machine and Boot2Docker, as was available in Docker Toolbox...
 
 See also: <https://boot2podman.github.io/2020/11/03/boot2podman-project.html>
